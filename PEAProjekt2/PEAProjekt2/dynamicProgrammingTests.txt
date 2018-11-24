@@ -1,0 +1,63 @@
+rozmiar macierzy: 6
+0 ms
+0 us
+rozmiar macierzy: 7
+0 ms
+0 us
+rozmiar macierzy: 8
+0 ms
+0 us
+rozmiar macierzy: 9
+0.2 ms
+200 us
+rozmiar macierzy: 10
+0.2 ms
+200 us
+rozmiar macierzy: 11
+0.5 ms
+500 us
+rozmiar macierzy: 12
+1.4 ms
+1400 us
+rozmiar macierzy: 13
+3.4 ms
+3400 us
+rozmiar macierzy: 14
+5.3 ms
+5300 us
+rozmiar macierzy: 15
+10.7 ms
+10700 us
+rozmiar macierzy: 16
+23.9 ms
+23900 us
+rozmiar macierzy: 17
+49.9 ms
+49900 us
+rozmiar macierzy: 18
+102.9 ms
+102900 us
+rozmiar macierzy: 19
+241.4 ms
+241400 us
+rozmiar macierzy: 20
+505.2 ms
+505200 us
+rozmiar macierzy: 21
+1080.4 ms
+1.0804e+06 us
+rozmiar macierzy: 22
+2307 ms
+2.307e+06 us
+rozmiar macierzy: 23
+5011 ms
+5.011e+06 us
+rozmiar macierzy: 24
+10685.1 ms
+1.06851e+07 us
+rozmiar macierzy: 25
+22953.2 ms
+2.29532e+07 us
+rozmiar macierzy: 26
+53578.1 ms
+5.35781e+07 us
