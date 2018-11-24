@@ -157,6 +157,7 @@
     <ClInclude Include="DynamicProgrammingHeldKarp.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="PEAProjekt2.h" />
+    <ClInclude Include="SimulatedAnnealing.h" />
     <ClInclude Include="Tests.h" />
     <ClInclude Include="VectorMatrix.h" />
   </ItemGroup>
@@ -167,6 +168,7 @@
     <ClCompile Include="DynamicProgrammingHeldKarp.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="PEAProjekt2.cpp" />
+    <ClCompile Include="SimulatedAnnealing.cpp" />
     <ClCompile Include="Tests.cpp" />
     <ClCompile Include="VectorMatrix.cpp" />
   </ItemGroup>
