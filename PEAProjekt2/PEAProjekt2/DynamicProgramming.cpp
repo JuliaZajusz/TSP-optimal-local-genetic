@@ -86,3 +86,20 @@ void dynamic_programming::print_result() {
 	cout << endl << "wagaSciezki = " << pathCost << endl;
 	cout << endl;
 }
+
+vector<int> dynamic_programming::getPath()
+{
+	vector<int> vec(path.begin(), path.end());
+	return vec;
+}
+
+int dynamic_programming::getCost()
+{
+	int cost=0;
+	for (list<int>::reverse_iterator it = path.rbegin(); it != path.rend(); ++it) {
+		if (it != path.rbegin()) {
+			cost += neighborhoodMatrix.neighborhoodMatrix[*prev(it)][*it];
+		}
+	}
+	return cost;
+}

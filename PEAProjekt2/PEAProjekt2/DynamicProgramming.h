@@ -22,4 +22,6 @@ public:
 	list<int> min_path(vector<vector<int>> &subdist, const vector<vector<int>> &dist);
 	void find_path();
 	void print_result();
+	vector<int> getPath();
+	int getCost();
 };

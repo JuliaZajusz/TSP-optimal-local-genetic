@@ -1,5 +1,6 @@
 #pragma once
 #include "Matrix.h"
+#include <vector>
 
 class brute_force {
 private:
@@ -12,4 +13,6 @@ public:
 	void find_path();
 	bool check_path_consistency(int *verticles);
 	void print_result();
+	vector<int> getPath();
+	int getCost();
 };

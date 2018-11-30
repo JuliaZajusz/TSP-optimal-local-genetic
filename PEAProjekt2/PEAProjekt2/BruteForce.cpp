@@ -99,3 +99,16 @@ void brute_force::print_result()
 	cout << "wagaSciezki = " << pathCost << endl;
 	cout << endl;
 }
+
+vector<int> brute_force::getPath()
+{
+	vector<int> vec;
+	vec.assign(path, path + neighborhoodMatrix.nVertices);
+	vec.push_back(path[0]);
+	return vec;
+}
+
+int brute_force::getCost()
+{
+	return pathCost;
+}

@@ -5,6 +5,7 @@
 #include<iostream>
 #include <iomanip>
 #include <fstream>
+#include "VectorMatrix.h"
 
 class Tests {
 public:
@@ -22,4 +23,8 @@ public:
 	void BruteForceTest(int matrixSizes[], int tablength, std::string filename);
 	void DynamicProgrammingTest(int matrixSizes[], int tablength, std::string filename);
 	void BranchAndBoundTest(int matrixSizes[], int tablength, std::string filename);
+	void SimulatedAnnealingTest(int matrixSizes[], int tablength, std::string filename);
+	void printMatrixToFile(std::string nazwapliku, vector_matrix m);
+	void printMPathToFile(std::string nazwapliku, vector<int> path);
+	void CompareBnBDPTest(int matrixSizes[], int tablength, std::string filename);
 };

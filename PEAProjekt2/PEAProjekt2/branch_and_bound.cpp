@@ -100,7 +100,7 @@ void branch_and_bound::bnb_recursion(vector_matrix towns, int currentLowerBound,
 				currentLowerBound -= ((second_minimum_value(towns, currentPath[level - 1]) + first_minimum_value(towns, i)) / 2);
 			}
 			// Czy opłaca się sprawdzać kolejne poziomy drzewa 
-			if ((currentLowerBound + currentWeight) < pathCost)
+			if ((currentLowerBound + currentWeight) <= pathCost)
 			{
 				//aktualizacja 
 				currentPath[level] = i;
@@ -129,20 +129,20 @@ void branch_and_bound::bnb_recursion(vector_matrix towns, int currentLowerBound,
 
 void branch_and_bound::find_path(vector_matrix towns)
 {
-	int* currentPath = new int[neighborhoodMatrix.nVertices + 1];
+	int* currentPath = new int[towns.nVertices + 1];
 	int currentLowerBound = 0;
 
 	// -1 oznacza, że aktualna droga jest pusta 
-	for (int i = 0; i < neighborhoodMatrix.nVertices + 1; i++)
+	for (int i = 0; i < towns.nVertices + 1; i++)
 	{
 		currentPath[i] = -1;
 	}
-	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
+	for (int i = 0; i < towns.nVertices; i++)
 	{
 		visited[i] = false;
 	}
 
-	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
+	for (int i = 0; i < towns.nVertices; i++)
 	{
 		currentLowerBound += (first_minimum_value(towns, i) + second_minimum_value(towns, i));
 	}
@@ -166,4 +166,23 @@ void branch_and_bound::print_result()
 	cout << 0 << endl;
 	cout << "wagaSciezki = " << pathCost << endl;
 	cout << endl;
+}
+
+vector<int> branch_and_bound::getPath()
+{
+	vector<int> vec;
+	vec.assign(path, path + neighborhoodMatrix.nVertices);
+	vec.push_back(path[0]);
+	return vec;
+}
+
+int branch_and_bound::getCost()
+{
+	// return pathCost;
+	int result = neighborhoodMatrix.neighborhoodMatrix[path[neighborhoodMatrix.nVertices - 1]][path[0]];
+	for (int i = 0; i < neighborhoodMatrix.nVertices - 1; i++)
+	{
+		result += neighborhoodMatrix.neighborhoodMatrix[path[i]][path[i + 1]];
+	}
+	return result;
 }

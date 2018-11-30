@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+class vector_matrix;
 using namespace std;
 
 const int PLACEHOLDER_VALUE = -10;
@@ -15,6 +16,7 @@ public:
 	int neighborhoodMatrix[MAX_SIZE][MAX_SIZE];
 	matrix();
 	matrix(int nVertices);
+	matrix(vector_matrix m);
 	bool loadFromFile(std::string filename);
 	void printNeighborhoodMatrix();
 };

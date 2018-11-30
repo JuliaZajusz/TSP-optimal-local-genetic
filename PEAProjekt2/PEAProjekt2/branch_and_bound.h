@@ -16,4 +16,6 @@ public:
 	void bnb_recursion(vector_matrix towns, int currentLowerBound, int currentWeight, int level, int* currentPath);
 	void find_path(vector_matrix towns);
 	void print_result();
+	vector<int> getPath();
+	int getCost();
 };

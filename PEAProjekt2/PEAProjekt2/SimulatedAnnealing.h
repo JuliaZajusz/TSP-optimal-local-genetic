@@ -16,4 +16,5 @@ public:
 	int calculatePathCost(vector<int> path);
 	void find_path(vector_matrix m, int iterations, float tempCoefficient);
 	void print_result();
+	vector <int> getPath();
 };

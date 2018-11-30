@@ -132,3 +132,8 @@ void SimulatedAnnealing::print_result()
 	cout << "wagaSciezki = " << calculatePathCost(path) << endl;
 	cout << endl;
 }
+
+vector<int> SimulatedAnnealing::getPath()
+{
+	return path;
+}

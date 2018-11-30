@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <sstream> 
+#include "VectorMatrix.h"
 //#include <iostream>
 using namespace std;
 
@@ -36,6 +37,26 @@ matrix::matrix(int vertices)
 				neighborhoodMatrix[i][j] = x;
 			}
 			
+		}
+	}
+}
+
+matrix::matrix(vector_matrix m)
+{
+	nVertices = m.nVertices;
+
+	for (int i = 0; i < MAX_SIZE; i++) {
+		for (int j = 0; j < MAX_SIZE; j++) {
+
+			if (i >= nVertices || j >= nVertices)
+			{
+				neighborhoodMatrix[i][j] = PLACEHOLDER_VALUE;
+			}
+			else
+			{
+				neighborhoodMatrix[i][j] = m.neighborhoodMatrix[i][j];
+			}
+
 		}
 	}
 }
