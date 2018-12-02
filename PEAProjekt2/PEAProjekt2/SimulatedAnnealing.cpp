@@ -9,7 +9,19 @@ SimulatedAnnealing::SimulatedAnnealing()
 SimulatedAnnealing::SimulatedAnnealing(vector_matrix m)
 {
 	neighborhoodMatrix = m;
-	find_path(m, 20, 0.9);
+	iterations = 20;
+	initialTempCoefficient = 0.9;
+	warunekZatrzymania = 100;
+	find_path(neighborhoodMatrix, iterations, initialTempCoefficient);
+}
+
+SimulatedAnnealing::SimulatedAnnealing(vector_matrix m, int iter, float tempC, int intIter)
+{
+	neighborhoodMatrix = m;
+	iterations = iter;
+	initialTempCoefficient = tempC;
+	warunekZatrzymania = intIter;
+	find_path(neighborhoodMatrix, iterations, initialTempCoefficient);
 }
 
 vector<int> SimulatedAnnealing::getRandomNeigboringSolution(vector<int> path)
@@ -58,7 +70,6 @@ vector<int> SimulatedAnnealing::getRandomNeigboringSolution(vector<int> path)
 int SimulatedAnnealing::calculatePathCost(vector<int> path)
 {
 	int cost = 0;
-	// cout << endl;
 	for(int i = 0; i < path.size()-1; i++)
 	{
 		cost += neighborhoodMatrix.neighborhoodMatrix[path[i]][path[i + 1]];
@@ -79,14 +90,10 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 	std::random_shuffle(sPath.begin(), sPath.end());
 	double temperature = tempCoefficient * calculatePathCost(sPath);
 
-	for (int x : sPath)
-		cout << x << " ";
-	cout<<endl;
-
 	path = sPath;//sB
 	
 	int warunek = 0;
-	while (warunek<100)
+	while (warunek< warunekZatrzymania)
 	{
 		for (int i = 0; i < iterations; i++)
 		{
@@ -96,7 +103,7 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 			int s1Cost = calculatePathCost(s1Path);
 			int sBCost = calculatePathCost(path); //sB cost
 	
-			if(s1Cost<sBCost)  //sB
+			if(s1Cost<=sBCost)  //sB
 			{
 				path = s1Path;
 			}
@@ -114,10 +121,14 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 				{
 					sPath = s1Path;
 				}
+				else
+				{
+					warunek++;
+				}
 			}
 		}
 		temperature = tempCoefficient * temperature;
-		warunek++;
+		
 	}
 }
 
@@ -136,4 +147,19 @@ void SimulatedAnnealing::print_result()
 vector<int> SimulatedAnnealing::getPath()
 {
 	return path;
+}
+
+int SimulatedAnnealing::getIterations()
+{
+	return iterations;
+}
+
+int SimulatedAnnealing::getInternalIterations()
+{
+	return warunekZatrzymania;
+}
+
+float SimulatedAnnealing::getInitialTempCoefficient()
+{
+	return initialTempCoefficient;
 }

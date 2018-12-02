@@ -26,6 +26,22 @@ vector_matrix::vector_matrix(int vertices)
 	}
 }
 
+vector_matrix::vector_matrix(int** matrix, int vertices)
+{
+	nVertices = vertices;
+	neighborhoodMatrix = vector<vector<int>>(nVertices, vector<int>(nVertices, PLACEHOLDER_VALUE));
+
+	for (int i = 0; i < vertices; i++) {
+		for (int j = 0; j < vertices; j++) {
+			neighborhoodMatrix[i][j] = matrix[i][j];
+			if (i == j)
+			{
+				neighborhoodMatrix[i][j] = -1;
+			}
+		}
+	}
+}
+
 vector_matrix::~vector_matrix()
 {
 }
