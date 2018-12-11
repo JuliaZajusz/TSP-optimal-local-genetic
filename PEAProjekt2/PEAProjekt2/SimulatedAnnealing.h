@@ -6,9 +6,7 @@
 class SimulatedAnnealing {
 	vector_matrix neighborhoodMatrix;
 	vector<int> path;
-	// bool *visited;
 	int pathCost = MAXINT;
-	// float temperature = 1.0;
 	int iterations;
 	float initialTempCoefficient;
 	int warunekZatrzymania;

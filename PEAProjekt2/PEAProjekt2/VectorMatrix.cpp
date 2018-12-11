@@ -60,6 +60,7 @@ bool vector_matrix::loadFromFile(std::string filename)
 	nVertices = matrixSize;
 	neighborhoodMatrix = vector<vector<int>>(nVertices, vector<int>(nVertices, PLACEHOLDER_VALUE));
 	while (true) {
+
 		if (file.good()) {
 			for (int i = 0; i < matrixSize; i++) {
 				for (int j = 0; j < matrixSize; j++) {
@@ -74,6 +75,7 @@ bool vector_matrix::loadFromFile(std::string filename)
 		}
 	}
 	file.close();
+
 	return true;
 }
 

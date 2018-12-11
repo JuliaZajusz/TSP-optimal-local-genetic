@@ -33,6 +33,7 @@ public:
 	void doAndSavePathAndCosts_DP(std::string filename, vector_matrix n);
 	float doAndSavePathAndCosts_BnB(std::string filename, vector_matrix n);
 	float doAndSavePathAndCosts_SA(std::string filename, vector_matrix n);
+	float doAndSavePathAndCosts_TS(std::string filename, vector_matrix n);
 	void testFromFiles(vector<string> fielpaths, std::string resultFilename);
 	void TestFromRandomMatrix(int matrixSizes[], int tablength, std::string filename);
 	void saveToDifferenceTable(int nVertices, float result1, float result2, int i);

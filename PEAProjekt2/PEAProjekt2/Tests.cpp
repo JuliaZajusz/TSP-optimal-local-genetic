@@ -1,4 +1,4 @@
-#include "Tests.h"
+﻿#include "Tests.h"
 #include <sstream>
 #include <cmath>
 #include <ctime>
@@ -8,6 +8,7 @@
 #include "branch_and_bound.h"
 #include "SimulatedAnnealing.h"
 #include "SourceConverter.h"
+#include "TabuSearch.h"
 
 using namespace std;
 
@@ -189,7 +190,7 @@ float Tests::doAndSavePathAndCosts_SA(std::string filename, vector_matrix n)
 	double timeSum = 0;
 
 	clock_t begin3 = clock();
-	SimulatedAnnealing simulated_annealing(n, 20, 0.95 ,  300);
+	SimulatedAnnealing simulated_annealing(n, 20, 0.95 ,  150 * n.nVertices);
 	clock_t end3 = clock();
 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
 
@@ -208,7 +209,32 @@ float Tests::doAndSavePathAndCosts_SA(std::string filename, vector_matrix n)
 }
 
 
+float Tests::doAndSavePathAndCosts_TS(std::string filename, vector_matrix n)
+{
+	for(int i = 0; i<3; i++)
+	{
+	double timeSum = 0;
 
+	clock_t begin3 = clock();
+	TabuSearch tabu_search(n, 20, i, true);
+	clock_t end3 = clock();
+	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+
+	zapiszDoPliku(filename, "TabuSearch: ");
+	printMPathToFile(filename, tabu_search.getPath());
+	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+
+	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	zapiszDoPliku(filename, "ms\n");
+	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	zapiszDoPliku(filename, "us\n");
+	}
+
+	// return tabu_search.calculatePathCost(tabu_search.getPath());
+	return -100;
+}
 
 
 void Tests::doAndSavePathsAndCosts(std::string filename, vector_matrix n, int i)
@@ -217,7 +243,8 @@ void Tests::doAndSavePathsAndCosts(std::string filename, vector_matrix n, int i)
 	// doAndSavePathAndCosts_BF(filename, n);
 	// float bnbCost = doAndSavePathAndCosts_BnB(filename, n);
 	// doAndSavePathAndCosts_DP(filename, n);
-	float saCost = doAndSavePathAndCosts_SA(filename, n);
+	// float saCost = doAndSavePathAndCosts_SA(filename, n);
+	float tsCost = doAndSavePathAndCosts_TS(filename, n);
 	// cout << bnbCost << " " << saCost << endl;
 	// saveToDifferenceTable(n.nVertices, bnbCost, saCost, i);
 }

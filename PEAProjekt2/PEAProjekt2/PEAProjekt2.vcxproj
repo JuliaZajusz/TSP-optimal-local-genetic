@@ -153,24 +153,30 @@
   <ItemGroup>
     <ClInclude Include="branch_and_bound.h" />
     <ClInclude Include="BruteForce.h" />
+    <ClInclude Include="City.h" />
     <ClInclude Include="DynamicProgramming.h" />
     <ClInclude Include="DynamicProgrammingHeldKarp.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="PEAProjekt2.h" />
     <ClInclude Include="SimulatedAnnealing.h" />
     <ClInclude Include="SourceConverter.h" />
+    <ClInclude Include="TabuSearch1.h" />
+    <ClInclude Include="TabuSearch.h" />
     <ClInclude Include="Tests.h" />
     <ClInclude Include="VectorMatrix.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="branch_and_bound.cpp" />
     <ClCompile Include="BruteForce.cpp" />
+    <ClCompile Include="City.cpp" />
     <ClCompile Include="DynamicProgramming.cpp" />
     <ClCompile Include="DynamicProgrammingHeldKarp.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="PEAProjekt2.cpp" />
     <ClCompile Include="SimulatedAnnealing.cpp" />
     <ClCompile Include="SourceConverter.cpp" />
+    <ClCompile Include="TabuSearch.cpp" />
+    <ClCompile Include="TabuSearch1.cpp" />
     <ClCompile Include="Tests.cpp" />
     <ClCompile Include="VectorMatrix.cpp" />
   </ItemGroup>

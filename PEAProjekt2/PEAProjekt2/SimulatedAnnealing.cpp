@@ -9,9 +9,9 @@ SimulatedAnnealing::SimulatedAnnealing()
 SimulatedAnnealing::SimulatedAnnealing(vector_matrix m)
 {
 	neighborhoodMatrix = m;
-	iterations = 20;
-	initialTempCoefficient = 0.9;
-	warunekZatrzymania = 100;
+	iterations = 10000000;
+	initialTempCoefficient = 0.999999;
+	warunekZatrzymania = 10000;
 	find_path(neighborhoodMatrix, iterations, initialTempCoefficient);
 }
 
@@ -93,8 +93,8 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 	path = sPath;//sB
 	
 	int warunek = 0;
-	while (warunek< warunekZatrzymania)
-	{
+	// while (warunek< warunekZatrzymania)
+	// {
 		for (int i = 0; i < iterations; i++)
 		{
 			vector<int> s1Path = getRandomNeigboringSolution(sPath);  //wygenerowanie sasiedniego rozwiazania
@@ -103,7 +103,7 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 			int s1Cost = calculatePathCost(s1Path);
 			int sBCost = calculatePathCost(path); //sB cost
 	
-			if(s1Cost<=sBCost)  //sB
+			if(s1Cost<sBCost)  //sB
 			{
 				path = s1Path;
 			}
@@ -112,6 +112,7 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 			if (costDifference < 0)
 			{
 				sPath = s1Path;
+				warunek = 0;
 			}
 			else
 			{
@@ -126,11 +127,15 @@ void SimulatedAnnealing::find_path(vector_matrix m, int iterations, float tempCo
 					warunek++;
 				}
 			}
+			if(warunek> warunekZatrzymania)
+			{
+				break;
+			}
 		}
 		temperature = tempCoefficient * temperature;
-		
+		// cout << warunek<<" ";
 	}
-}
+// }
 
 void SimulatedAnnealing::print_result()
 {
