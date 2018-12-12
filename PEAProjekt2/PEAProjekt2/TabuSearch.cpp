@@ -14,11 +14,25 @@ TabuSearch::TabuSearch(vector_matrix m)
 	timer = 60;
 	neighbourhoodMode = 2;
 	diversification = true;  // domyślne włączenie dywersyfikacji
+	greedy = false;
+	diversificationFactor = 3;
+	alfa = 10;
+	cadence = 3 * m.nVertices - 1;
+	iteration = 500000 * m.nVertices;
 	find_path(neighborhoodMatrix);
 }
 
-TabuSearch::TabuSearch(vector_matrix m, int timer, int neighbourhoodMode, bool diversification)
+TabuSearch::TabuSearch(vector_matrix m, int timer, int neighbourhoodMode, bool diversification, double diversificationFactor, int iteration, bool greedy, int alfa, int cadence)
 {
+	this->cadence = cadence;
+	if(cadence > 3*m.nVertices - 1)
+	{
+		this->cadence = 3 * m.nVertices - 1;
+	}
+	this->alfa = alfa;
+	this->greedy = greedy;
+	this->iteration = iteration;
+	this->diversificationFactor = diversificationFactor;
 	neighborhoodMatrix = m;
 	path = vector<int>(m.nVertices, -10);
 	this->timer = timer;
@@ -157,8 +171,19 @@ int TabuSearch::getAlfa()
 	return alfa;
 }
 
-vector<int> TabuSearch::getRandomGreedyPath()
+double TabuSearch::getDiversificationFactor()
 {
+	return diversificationFactor;
+}
+
+bool TabuSearch::getGreedy()
+{
+	return greedy;
+}
+
+vector<int> TabuSearch::getRandomGreedyPath(int v)
+{
+	vector <int> cPath = vector<int>(neighborhoodMatrix.nVertices,-10);
 	int ** tmpTab = new int*[neighborhoodMatrix.nVertices];
 
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
@@ -178,8 +203,8 @@ vector<int> TabuSearch::getRandomGreedyPath()
 	int tmp_min = MAXINT;
 	int tmp_index;
 
-	current_path[0] = v;
-	current_path[neighborhoodMatrix.nVertices] = v;
+	cPath[0] = v;
+	cPath[neighborhoodMatrix.nVertices] = v;
 
 	for (int X = 0; X < neighborhoodMatrix.nVertices; X++)
 		tmpTab[X][v] = MAXINT;
@@ -195,9 +220,9 @@ vector<int> TabuSearch::getRandomGreedyPath()
 		for (int X = 0; X < neighborhoodMatrix.nVertices; X++)
 			tmpTab[X][tmp_index] = MAXINT;
 		v = tmp_index;
-		tmp_min = MAX;
+		tmp_min = MAXINT;
 
-		current_path[N] = v;
+		cPath[N] = v;
 	}
 
 
@@ -205,21 +230,23 @@ vector<int> TabuSearch::getRandomGreedyPath()
 		delete[] tmpTab[i];
 	delete[] tmpTab;
 
+	return cPath;
 }
 
 
 
 void TabuSearch::find_path(vector_matrix m)
 {
-	srand((unsigned)time(NULL));
+	// srand((unsigned)time(NULL));
+	
 	
 	
 	// Zmienne do manipulacji
-	iteration = 50000 * m.nVertices;      // liczba iteracji pętli głównej
+	// iteration = 500000 * m.nVertices;      // liczba iteracji pętli głównej
 	int numberofitteratione1 = m.nVertices;    // liczba iteracji pętli E1
-	cadence = m.nVertices * 3 - 1;        // Liczba elementów na liście tabu (!!WAŻNE!!) nie większa niż 3*N-1
-	alfa = 10;								// Współczynnik alfa. Im większy tym mniejsze prawpodobonieństwo wysątpienia kryterium aspiracji
-	int critical_number = m.nVertices * 2;      // Liczba braków polepszeń wyniku globalnego (dywersyfikacja)
+	// cadence = m.nVertices * 3 - 1;        // Liczba elementów na liście tabu (!!WAŻNE!!) nie większa niż 3*N-1
+	// alfa = 10;								// Współczynnik alfa. Im większy tym mniejsze prawpodobonieństwo wysątpienia kryterium aspiracji
+	int critical_number = m.nVertices * 500;      // Liczba braków polepszeń wyniku globalnego (dywersyfikacja)
 
 	// path = new int[m.nVertices];           // inicjalizowanie ścieżki globalnej
 	// pathCost = 0;               // inicjalizowanie wyniku globalnego
@@ -232,7 +259,7 @@ void TabuSearch::find_path(vector_matrix m)
 	int numberofsollution = 0;       // liczba nowych wyników
 	// zmienne te są potrzebne do dywesyfikacji
 
-	double best_current_sollution2 = 100000000;        // zmienna zapmięitująca najlepsze lokalne rozwiązanie (pomocna przy wyjściu z minimum lokalnego)
+	double best_current_solution2 = 100000000;        // zmienna zapmięitująca najlepsze lokalne rozwiązanie (pomocna przy wyjściu z minimum lokalnego)
 
 	int numberoftabu = 0;            // liczba elementów na liście tabu
 
@@ -242,8 +269,9 @@ void TabuSearch::find_path(vector_matrix m)
 
 
 
-
-	// wyrenderowanie losowej ścieżki jako ścieżki początkowej
+	if(!greedy)
+	{
+		// wyrenderowanie losowej ścieżki jako ścieżki początkowej
 	int i1 = 0, i2 = 0, remember = 0;
 	for (int i = 0; i < m.nVertices; i++) {
 		path[i] = i;
@@ -259,8 +287,11 @@ void TabuSearch::find_path(vector_matrix m)
 		path[i2] = path[i1];
 		path[i1] = remember;
 	}
-
-
+	} else
+	{
+		path = getRandomGreedyPath( rand() % neighborhoodMatrix.nVertices);
+	}
+	
 	pathCost = calculatePathCost(path); // obliczenie kosztu przejścia ścieżki i ustawienie jej jako jako najlepszego globalnego wyniku
 	// copy(best_current_path2, path);           // kopiowanie best_path do best_current_path2
 	 best_current_path2 = path;											  // (zapamiętanie głównej ścieżki, ale nie zmienianie jej, żeby wyjść z minimum lokalnego)
@@ -292,8 +323,8 @@ void TabuSearch::find_path(vector_matrix m)
 		}
 
 		// aktualizowanie zmiennych
-		double current_sollution = 0;
-		double best_current_sollution = 100000000;
+		double current_solution = 0;
+		double best_current_solution = 100000000;
 		d1 = 0;
 		d2 = 0;
 
@@ -318,7 +349,7 @@ void TabuSearch::find_path(vector_matrix m)
 			}
 
 			// // obliczwanie wartości ścieżki lokalnej
-			current_sollution = calculatePathCost(current_path);
+			current_solution = calculatePathCost(current_path);
 			
 			// sprawdzanie czy wylosowane przejście pomiędzy miastami nie jest na liście tabu
 			for (int m = 0; m <= cadence; m++) {
@@ -330,14 +361,14 @@ void TabuSearch::find_path(vector_matrix m)
 			}
 			
 			// kryterium aspiracji (jeżeli lokalny wynik * współczynnik alfa < najlepszy lokalny wynik, to pomiń listę tabu i zaktualizuj wynik
-			if (current_sollution * (1 + alfa * 0.01) < best_current_sollution)
+			if (current_solution * (1 + alfa * 0.01) < best_current_solution)
 				isintabulist = false;
 			
 			
 			// funkcja oceny wartosci ruchu – jeżeli ruch nie znajduje się na liście i można polepszyć lokalny wynik,
 			// to aktualizuj najlepszy lokalny wynik i ścieżkę oraz zapamiętaj miasta, które się zmieniły
-			if (isintabulist == false && best_current_sollution > current_sollution) {
-				best_current_sollution = current_sollution;
+			if (isintabulist == false && best_current_solution > current_solution) {
+				best_current_solution = current_solution;
 				// copy(best_current_path, current_path);
 				best_current_path = current_path;
 				f1 = d1;
@@ -349,16 +380,16 @@ void TabuSearch::find_path(vector_matrix m)
 		numberofsollution++;        // aktualizacja liczby obliczonych wyników
 
 		// aktualizowanie best_current_sollution2 i zwiększanie liczby polepszeń wyników
-		if (best_current_sollution < best_current_sollution2) {
-			best_current_sollution2 = best_current_sollution;
+		if (best_current_solution < best_current_solution2) {
+			best_current_solution2 = best_current_solution;
 			// copy(best_current_path2, best_current_path);
 			best_current_path2 = best_current_path;
 			numberofbettersollution++;
 		}
 
 		// aktualizowanie best_sollution i best_path (wyników globalnych)
-		if (best_current_sollution2 < pathCost) {
-			pathCost = best_current_sollution2;                                   // <---------------------------
+		if (best_current_solution2 < pathCost) {
+			pathCost = best_current_solution2;                                   // <---------------------------
 			// copy(path, best_current_path);
 			// path = best_current_path;
 			path = best_current_path2;
@@ -370,30 +401,38 @@ void TabuSearch::find_path(vector_matrix m)
 			// critical event
 			// jeżeli od critical_number iteracji nie było polepszeń wyniku,
 			// to dokonaj dywersyfikacji, czyli wylosowania nowej globalnej ściżeki
-			if (numberofsollution - numberofbettersollution >= critical_number) {
+			// if (numberofsollution - numberofbettersollution >= critical_number) {
+			 if (j%(int)(iteration*diversificationFactor)) {
+			//if (j%(20000)) {
+
 				// cout << "LOSOWANIE NOWEJ GLOBALNEJ!" << endl;
-				// losowanie nowej globalnej ścieżki
-				int z1 = 0, z2 = 0, rem = 0;
-				for (int i = 0; i < m.nVertices; i++) {
-					best_current_path2[i] = i;
-				}
-
-				for (int i = 0; i < m.nVertices * 5; i++) {
-					z1 = rand() % m.nVertices;
-					z2 = rand() % m.nVertices;
-					while (z1 == z2)
-					{
-						z2 = std::rand() % m.nVertices;
+				// if (!greedy)
+				// {
+					// losowanie nowej globalnej ścieżki
+					int z1 = 0, z2 = 0, rem = 0;
+					for (int i = 0; i < m.nVertices; i++) {
+						best_current_path2[i] = i;
 					}
-					rem = best_current_path2[z2];
-					best_current_path2[z2] = best_current_path2[z1];
-					best_current_path2[z1] = rem;
-				}
 
+					for (int i = 0; i < m.nVertices * 5; i++) {
+						z1 = rand() % m.nVertices;
+						z2 = rand() % m.nVertices;
+						while (z1 == z2)
+						{
+							z2 = std::rand() % m.nVertices;
+						}
+						rem = best_current_path2[z2];
+						best_current_path2[z2] = best_current_path2[z1];
+						best_current_path2[z1] = rem;
+					}
+				// }else
+				// {
+				// 	best_current_path2 = getRandomGreedyPath(rand() % neighborhoodMatrix.nVertices);
+				// }
 				// aktualizowanie zmiennych po dywersyfikacji
 				numberofsollution = 0;
 				numberofbettersollution = 0;
-				best_current_sollution2 = 10000000;
+				best_current_solution2 = 10000000;
 			}
 
 		}

@@ -21,7 +21,8 @@ class TabuSearch {
 	City * tabulist;                 // listy tabu (lista zakazanych przejść pomiędzy miastami)
 	int iteration;					 // liczba iteracji pętli głównej
 	int alfa;					// Współczynnik alfa. Im większy tym mniejsze prawpodobonieństwo wysątpienia kryterium aspiracji
-
+	double diversificationFactor;
+	bool greedy;
 	vector<int> current_path;               // ścieżka lokalna (istenieje wewnątrz pętli E1)
 	vector<int> best_current_path;          // najlepsza ścieżka lokalna
 	vector<int> best_current_path2;         // zmienna wychodząca z minimum lokalnego (dywersyfikacja)
@@ -29,7 +30,7 @@ class TabuSearch {
 public:
 	TabuSearch();
 	TabuSearch(vector_matrix m);
-	TabuSearch(vector_matrix m, int timer, int neigbour, bool diversification);
+	TabuSearch(vector_matrix m, int timer, int neigbourhoodMode, bool diversification, double diversificationFactor, int iteration, bool greedy, int alfa, int cadence);
 	// TabuSearch(vector_matrix m, int iter, float tempC, int intIter);
 	// vector<int> getRandomNeigboringSolution(vector<int> path);
 	int calculatePathCost(vector<int> path);
@@ -51,6 +52,8 @@ public:
 	int getCadence();
 	int getIterations();
 	int getAlfa();
+	double getDiversificationFactor();
+	bool getGreedy();
 
-	vector <int> getRandomGreedyPath();
+	vector <int> getRandomGreedyPath(int v);
 };
