@@ -19,7 +19,7 @@ vector_matrix::vector_matrix(int vertices)
 			}
 			else
 			{
-				x = rand() % 100;
+				x = 1 + rand() % 100;
 			}
 			neighborhoodMatrix[i][j] = x;
 		}

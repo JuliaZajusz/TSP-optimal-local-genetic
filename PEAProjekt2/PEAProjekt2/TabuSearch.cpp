@@ -11,7 +11,7 @@ TabuSearch::TabuSearch(vector_matrix m)
 {
 	neighborhoodMatrix = m;
 	path = vector<int>( m.nVertices, -10 );
-	timer = 60;
+	timer = 15;
 	neighbourhoodMode = 2;
 	diversification = true;  // domyślne włączenie dywersyfikacji
 	greedy = false;
@@ -183,14 +183,13 @@ bool TabuSearch::getGreedy()
 
 vector<int> TabuSearch::getRandomGreedyPath(int v)
 {
-	vector <int> cPath = vector<int>(neighborhoodMatrix.nVertices,-10);
+	vector <int> cPath(neighborhoodMatrix.nVertices,-10);
 	int ** tmpTab = new int*[neighborhoodMatrix.nVertices];
 
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
 	{
 		tmpTab[i] = new int[neighborhoodMatrix.nVertices];
 	}
-
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
 	{
 		for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
@@ -204,7 +203,7 @@ vector<int> TabuSearch::getRandomGreedyPath(int v)
 	int tmp_index;
 
 	cPath[0] = v;
-	cPath[neighborhoodMatrix.nVertices] = v;
+	// cPath[neighborhoodMatrix.nVertices] = v;
 
 	for (int X = 0; X < neighborhoodMatrix.nVertices; X++)
 		tmpTab[X][v] = MAXINT;
@@ -236,30 +235,14 @@ vector<int> TabuSearch::getRandomGreedyPath(int v)
 
 
 void TabuSearch::find_path(vector_matrix m)
-{
-	// srand((unsigned)time(NULL));
-	
-	
-	
-	// Zmienne do manipulacji
-	// iteration = 500000 * m.nVertices;      // liczba iteracji pętli głównej
+{	
 	int numberofitteratione1 = m.nVertices;    // liczba iteracji pętli E1
-	// cadence = m.nVertices * 3 - 1;        // Liczba elementów na liście tabu (!!WAŻNE!!) nie większa niż 3*N-1
-	// alfa = 10;								// Współczynnik alfa. Im większy tym mniejsze prawpodobonieństwo wysątpienia kryterium aspiracji
-	int critical_number = m.nVertices * 500;      // Liczba braków polepszeń wyniku globalnego (dywersyfikacja)
-
-	// path = new int[m.nVertices];           // inicjalizowanie ścieżki globalnej
-	// pathCost = 0;               // inicjalizowanie wyniku globalnego
+	
 	tabulist = new City[cadence](); // inicjalizowanie listy tabu
 	current_path = vector<int>(m.nVertices, -10);       // inicjalizowanie ścieżki lokalnej
-	best_current_path = vector<int>( m.nVertices, -10 );  // inicjalizowanie najlepszej ścieżki lokalnej
-	best_current_path2 = vector<int>( m.nVertices, -10 ); // inicjalizowanie ścieżki do wyjscia z minimum lokalnego ( dywersyfikacji
-
-	int numberofbettersollution = 0; // liczba polepszeń wyniku
-	int numberofsollution = 0;       // liczba nowych wyników
-	// zmienne te są potrzebne do dywesyfikacji
-
-	double best_current_solution2 = 100000000;        // zmienna zapmięitująca najlepsze lokalne rozwiązanie (pomocna przy wyjściu z minimum lokalnego)
+	main_loop_best_current_path = vector<int>( m.nVertices, -10 );  // inicjalizowanie najlepszej ścieżki lokalnej
+	
+	double current_solution = 100000000;        // zmienna zapmięitująca najlepsze lokalne rozwiązanie (pomocna przy wyjściu z minimum lokalnego)
 
 	int numberoftabu = 0;            // liczba elementów na liście tabu
 
@@ -293,8 +276,9 @@ void TabuSearch::find_path(vector_matrix m)
 	}
 	
 	pathCost = calculatePathCost(path); // obliczenie kosztu przejścia ścieżki i ustawienie jej jako jako najlepszego globalnego wyniku
-	// copy(best_current_path2, path);           // kopiowanie best_path do best_current_path2
-	 best_current_path2 = path;											  // (zapamiętanie głównej ścieżki, ale nie zmienianie jej, żeby wyjść z minimum lokalnego)
+	current_solution = pathCost;
+	
+	current_path = path;											  // (zapamiętanie głównej ścieżki, ale nie zmienianie jej, żeby wyjść z minimum lokalnego)
 
 
 
@@ -306,36 +290,29 @@ void TabuSearch::find_path(vector_matrix m)
 	 // rozpoczęcie głównej pętli
 	for (int j = 0; j < iteration; j++) {
 		d = getCounter();
-		if (d > x*r) {
-			cout << "Koszt=" << pathCost << " w " << x << " sekundzie, iteracje: " << j << endl;
-			
-			// for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
-			// {
-			// 	cout << path[i] << " ";
-			// }
-			// cout << endl;
-			x++;
-		}
+		// if (d > x*r) {
+		// 	cout << "wagaSciezki path = " << calculatePathCost(path)<< endl;
+		// 	print_result();
+		// 	cout << "Koszt=" << pathCost << " w " << x << " sekundzie, iteracje: " << j << endl;
+		// 	x++;
+		// }
 
 		// kryterium zakończenia algorytmu (timer = czas trwania algorytmu)
 		if (d > timer * 1000) {
+			cout << "LICZBA ITERACJI " << j << endl;
 			break;
 		}
 
 		// aktualizowanie zmiennych
-		double current_solution = 0;
-		double best_current_solution = 100000000;
+		double main_loop_best_current_solution = 100000000;
 		d1 = 0;
 		d2 = 0;
 
 
 		// wewnętrzna pętla E1 – pomaga ona wyznaczyć minimum lokalne
 		for (int w = 0; w < numberofitteratione1; w++) {
-			int isintabulist = false;
+			bool isintabulist = false;
 
-			// kopiowanie best_current_path2 do current_path
-			// copy(current_path, best_current_path2);
-			 current_path = best_current_path2;
 
 			// tryb sąsiedztwa
 			if (neighbourhoodMode == 2) {
@@ -352,8 +329,7 @@ void TabuSearch::find_path(vector_matrix m)
 			current_solution = calculatePathCost(current_path);
 			
 			// sprawdzanie czy wylosowane przejście pomiędzy miastami nie jest na liście tabu
-			for (int m = 0; m <= cadence; m++) {
-				// cout <<"d1,d2: "<< d1 << " " << d2 << endl;
+			for (int m = 0; m < cadence; m++) {
 				if (tabulist[m].getX() == d1 && tabulist[m].getY() == d2) {
 					isintabulist = true;
 					break;
@@ -361,82 +337,62 @@ void TabuSearch::find_path(vector_matrix m)
 			}
 			
 			// kryterium aspiracji (jeżeli lokalny wynik * współczynnik alfa < najlepszy lokalny wynik, to pomiń listę tabu i zaktualizuj wynik
-			if (current_solution * (1 + alfa * 0.01) < best_current_solution)
+			if (current_solution * (1 + alfa * 0.01) < main_loop_best_current_solution)
 				isintabulist = false;
 			
 			
 			// funkcja oceny wartosci ruchu – jeżeli ruch nie znajduje się na liście i można polepszyć lokalny wynik,
 			// to aktualizuj najlepszy lokalny wynik i ścieżkę oraz zapamiętaj miasta, które się zmieniły
-			if (isintabulist == false && best_current_solution > current_solution) {
-				best_current_solution = current_solution;
+			if (!isintabulist && current_solution < main_loop_best_current_solution) {
+				main_loop_best_current_solution = current_solution;
 				// copy(best_current_path, current_path);
-				best_current_path = current_path;
+				main_loop_best_current_path = current_path;
 				f1 = d1;
 				f2 = d2;
 			}
 		}
 		// KONIEC PĘLTI WEWNĘTRZNEJ E1
 
-		numberofsollution++;        // aktualizacja liczby obliczonych wyników
 
-		// aktualizowanie best_current_sollution2 i zwiększanie liczby polepszeń wyników
-		if (best_current_solution < best_current_solution2) {
-			best_current_solution2 = best_current_solution;
-			// copy(best_current_path2, best_current_path);
-			best_current_path2 = best_current_path;
-			numberofbettersollution++;
-		}
-
-		// aktualizowanie best_sollution i best_path (wyników globalnych)
-		if (best_current_solution2 < pathCost) {
-			pathCost = best_current_solution2;                                   // <---------------------------
-			// copy(path, best_current_path);
-			// path = best_current_path;
-			path = best_current_path2;
+		// aktualizowanie current_solution i path (wyników globalnych)
+		if (current_solution < pathCost) {
+			pathCost = current_solution;              
+			path = current_path;
 		}
 
 		// dywersyfikacja (wyjście z minimum lokalnego)
 		if (diversification == true) {
 
-			// critical event
-			// jeżeli od critical_number iteracji nie było polepszeń wyniku,
-			// to dokonaj dywersyfikacji, czyli wylosowania nowej globalnej ściżeki
-			// if (numberofsollution - numberofbettersollution >= critical_number) {
-			 if (j%(int)(iteration*diversificationFactor)) {
-			//if (j%(20000)) {
+			
+			 if (j%(int)ceil((iteration*diversificationFactor))) {
 
-				// cout << "LOSOWANIE NOWEJ GLOBALNEJ!" << endl;
-				// if (!greedy)
-				// {
-					// losowanie nowej globalnej ścieżki
-					int z1 = 0, z2 = 0, rem = 0;
-					for (int i = 0; i < m.nVertices; i++) {
-						best_current_path2[i] = i;
-					}
+				 if (!greedy)
+				 {
+					 // losowanie nowej globalnej ścieżki
+					 int z1 = 0, z2 = 0, rem = 0;
+					 for (int i = 0; i < m.nVertices; i++) {
+						 current_path[i] = i;
+					 }
 
-					for (int i = 0; i < m.nVertices * 5; i++) {
-						z1 = rand() % m.nVertices;
-						z2 = rand() % m.nVertices;
-						while (z1 == z2)
-						{
-							z2 = std::rand() % m.nVertices;
-						}
-						rem = best_current_path2[z2];
-						best_current_path2[z2] = best_current_path2[z1];
-						best_current_path2[z1] = rem;
-					}
-				// }else
-				// {
-				// 	best_current_path2 = getRandomGreedyPath(rand() % neighborhoodMatrix.nVertices);
-				// }
-				// aktualizowanie zmiennych po dywersyfikacji
-				numberofsollution = 0;
-				numberofbettersollution = 0;
-				best_current_solution2 = 10000000;
+					 for (int i = 0; i < m.nVertices * 5; i++) {
+						 z1 = rand() % m.nVertices;
+						 z2 = rand() % m.nVertices;
+						 while (z1 == z2)
+						 {
+							 z2 = std::rand() % m.nVertices;
+						 }
+						 rem = current_path[z2];
+						 current_path[z2] = current_path[z1];
+						 current_path[z1] = rem;
+					 }
+				 }
+				 else
+				 {
+					 current_path = getRandomGreedyPath(rand() % neighborhoodMatrix.nVertices);
+				 }
 			}
 
 		}
-		// cout << "\n numberoftabu: " << numberoftabu << ", x: " << f1 << ", " << ", y: " << f2 << endl;;
 		// aktualizowanie tablicy tabu
 		tabulist[numberoftabu].setId(numberoftabu);
 		tabulist[numberoftabu].setX(f1);
@@ -450,16 +406,16 @@ void TabuSearch::find_path(vector_matrix m)
 
 void TabuSearch::print_result()
 {
-	for (int i = 0; i < cadence; i++)
-	{
-		cout << "id: " << tabulist[i].getId() << ", x: " << tabulist[i].getX() << ", " << ", y: " << tabulist[i].getY() << endl;
-	}
+	// for (int i = 0; i < cadence; i++)
+	// {
+	// 	cout << "id: " << tabulist[i].getId() << ", x: " << tabulist[i].getX() << ", " << ", y: " << tabulist[i].getY() << endl;
+	// }
 	cout << "Sciezka: " << endl;
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
 	{
 		cout << path[i] << " ";
 	}
-	cout << 0 << endl;
+	cout << path[0] << endl;
 	cout << "wagaSciezki = " << pathCost << endl;
 	cout << endl;
 }

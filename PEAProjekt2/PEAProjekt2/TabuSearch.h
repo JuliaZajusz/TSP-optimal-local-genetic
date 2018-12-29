@@ -24,7 +24,7 @@ class TabuSearch {
 	double diversificationFactor;
 	bool greedy;
 	vector<int> current_path;               // ścieżka lokalna (istenieje wewnątrz pętli E1)
-	vector<int> best_current_path;          // najlepsza ścieżka lokalna
+	vector<int> main_loop_best_current_path;          // najlepsza ścieżka lokalna
 	vector<int> best_current_path2;         // zmienna wychodząca z minimum lokalnego (dywersyfikacja)
 
 public:

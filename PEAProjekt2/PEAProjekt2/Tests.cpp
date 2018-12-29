@@ -211,28 +211,172 @@ float Tests::doAndSavePathAndCosts_SA(std::string filename, vector_matrix n)
 
 float Tests::doAndSavePathAndCosts_TS(std::string filename, vector_matrix n)
 {
-	//for(int i = 0; i<3; i++)
-	//{
+	// for(int i = 0; i<3; i++)
+	// {
+	// double timeSum = 0;
+	//
+	// clock_t begin3 = clock();
+	// TabuSearch tabu_search(n, 20, i, true,0.3, 500000* n.nVertices, true, 10, 3*n.nVertices-1);  //br17.atsp
+	// TabuSearch tabu_search(n, 10, 2, true,0.0003, 500000* n.nVertices, true, 10, 3*n.nVertices-1);
+
+
+	// TabuSearch tabu_search(n, 10, 2, true,0.0003, pow(100,i+1) * 5* n.nVertices, true, 10, 3*n.nVertices-1);
+	// clock_t end3 = clock();
+	// timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	//
+	// zapiszDoPliku(filename, "TabuSearch: ");
+	// zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, true,0.0003, pow(100,i+1) * 500* n.nVertices, true, 10, 3*n.nVertices-1);");
+	// printMPathToFile(filename, tabu_search.getPath());
+	// zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	// zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	// zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+	// zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor())+ "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	//
+	// zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	// zapiszDoPliku(filename, "ms\n");
+	// zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	// zapiszDoPliku(filename, "us\n");
+	// }
+
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	double timeSum = 0;
+	//
+	// 	clock_t begin3 = clock();
+	//
+	// 	TabuSearch tabu_search(n, 10, 2, true, 50*i + 50, 500 * n.nVertices, false, 20, 3 * n.nVertices - 1);
+	// 	// TabuSearch tabu_search(n, 10, 2, true, 0.0003, 500 * n.nVertices, false, 20, 3 * n.nVertices - 1);
+	// 	clock_t end3 = clock();
+	// 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	//
+	// 	zapiszDoPliku(filename, "TabuSearch: ");
+	// 	zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, true, 50*i + 50, 500 * n.nVertices, true, 20, 3 * n.nVertices - 1);");
+	// 	printMPathToFile(filename, tabu_search.getPath());
+	// 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	// 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+	// 	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	//
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	// 	zapiszDoPliku(filename, "ms\n");
+	// 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	// 	zapiszDoPliku(filename, "us\n");
+	// }
+	//
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	double timeSum = 0;
+	//
+	// 	clock_t begin3 = clock();
+	// 	TabuSearch tabu_search(n, 10, 2, true, 3, 500, true, 20, (i+1) * n.nVertices - 1);
+	// 	clock_t end3 = clock();
+	// 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	//
+	// 	zapiszDoPliku(filename, "TabuSearch: ");
+	// 	zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, true, 3, 500, true, 20, (i+1) * n.nVertices - 1);");
+	// 	printMPathToFile(filename, tabu_search.getPath());
+	// 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	// 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+	// 	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	//
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	// 	zapiszDoPliku(filename, "ms\n");
+	// 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	// 	zapiszDoPliku(filename, "us\n");
+	// }
+
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	double timeSum = 0;
+	//
+	// 	clock_t begin3 = clock();
+	// 	TabuSearch tabu_search(n, i*2 + 2, 2, true, 3, 500, true, 20, n.nVertices - 1);
+	// 	clock_t end3 = clock();
+	// 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	//
+	// 	zapiszDoPliku(filename, "TabuSearch: ");
+	// 	zapiszDoPliku(filename, "TabuSearch tabu_search(n, i*2 + 2, 2, true, 3, 500, true, 20, n.nVertices - 1);");
+	// 	printMPathToFile(filename, tabu_search.getPath());
+	// 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	// 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+	// 	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	//
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	// 	zapiszDoPliku(filename, "ms\n");
+	// 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	// 	zapiszDoPliku(filename, "us\n");
+	// }
+
+	// for (int i = 0; i < 3; i++)
+	// {
+	// 	double timeSum = 0;
+	//
+	// 	clock_t begin3 = clock();
+	// 	TabuSearch tabu_search(n, 10, 2, true, 3, 50000, true, 20 * i + 10, 3 *n.nVertices - 1);
+	// 	clock_t end3 = clock();
+	// 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	//
+	// 	zapiszDoPliku(filename, "TabuSearch: ");
+	// 	zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, true, 3, 50000, true, 20 * i + 10, 3 *n.nVertices - 1);");
+	// 	printMPathToFile(filename, tabu_search.getPath());
+	// 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+	// 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+	// 	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	//
+	// 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	// 	zapiszDoPliku(filename, "ms\n");
+	// 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	// 	zapiszDoPliku(filename, "us\n");
+	// }
+
+// for (int i = 0; i < 3; i++)
+// {
+// 	double timeSum = 0;
+//
+// 	clock_t begin3 = clock();
+// 	TabuSearch tabu_search(n, 10, 2, false, 3, 50000, true, 10, 3 * n.nVertices - 1);
+// 	clock_t end3 = clock();
+// 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+//
+// 	zapiszDoPliku(filename, "TabuSearch: ");
+// 	zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, false, 3, 50000, true, 10, 3 * n.nVertices - 1);");
+// 	printMPathToFile(filename, tabu_search.getPath());
+// 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
+// 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
+// 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
+// 	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+//
+// 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+// 	zapiszDoPliku(filename, "ms\n");
+// 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+// 	zapiszDoPliku(filename, "us\n");
+// }
+
+// for (int i = 0; i < 3; i++)
+// {
 	double timeSum = 0;
 
 	clock_t begin3 = clock();
-	// TabuSearch tabu_search(n, 20, i, true,0.3, 500000* n.nVertices, true, 10, 3*n.nVertices-1);  //br17.atsp
-	TabuSearch tabu_search(n, 20, 2, true,0.0003, 500000* n.nVertices, true, 10, 3*n.nVertices-1);
+	TabuSearch tabu_search(n, 10, 2, true, 3, 500, true, 10, 2 * n.nVertices - 1);
 	clock_t end3 = clock();
 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
 
 	zapiszDoPliku(filename, "TabuSearch: ");
+	zapiszDoPliku(filename, "TabuSearch tabu_search(n, 10, 2, true, 3, 500, true, 10, 2 * n.nVertices - 1);");
 	printMPathToFile(filename, tabu_search.getPath());
 	zapiszDoPliku(filename, "koszt sciezki: " + to_string(tabu_search.calculatePathCost(tabu_search.getPath())) + "\n");
 	zapiszDoPliku(filename, "Czas: " + to_string(tabu_search.getTimer()) + " metoda sasiedztwa: " + tabu_search.getNeighbourMethod() + "kadencje: " + to_string(tabu_search.getCadence()) + "dywersyfikacja: " + to_string(tabu_search.getDiversification()) + "\n");
 	zapiszDoPliku(filename, "Iteracje: " + to_string(tabu_search.getIterations()) + " alfa: " + to_string(tabu_search.getAlfa()) + "\n");
-	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor())+ "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
+	zapiszDoPliku(filename, "Wspolczynnik dywersyfikacji: " + to_string(tabu_search.getDiversificationFactor()) + "Pierwsza sciezka zachlannie?: " + to_string(tabu_search.getGreedy()) + "\n");
 
 	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
 	zapiszDoPliku(filename, "ms\n");
 	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
 	zapiszDoPliku(filename, "us\n");
-	//}
+// }
 
 	// return tabu_search.calculatePathCost(tabu_search.getPath());
 	return -100;
@@ -245,10 +389,10 @@ void Tests::doAndSavePathsAndCosts(std::string filename, vector_matrix n, int i)
 	// doAndSavePathAndCosts_BF(filename, n);
 	// float bnbCost = doAndSavePathAndCosts_BnB(filename, n);
 	// doAndSavePathAndCosts_DP(filename, n);
-	float saCost = doAndSavePathAndCosts_SA(filename, n);
+	// float saCost = doAndSavePathAndCosts_SA(filename, n);
 	float tsCost = doAndSavePathAndCosts_TS(filename, n);
 	// cout << bnbCost << " " << saCost << endl;
-	// saveToDifferenceTable(n.nVertices, bnbCost, saCost, i);
+	// saveToDifferenceTable(n.nVertices, bnbCost, tsCost, i);
 }
 
 void Tests::testFromFiles(vector<string> fielpaths, std::string resultFilename)
