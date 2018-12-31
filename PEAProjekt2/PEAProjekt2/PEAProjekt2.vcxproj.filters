@@ -30,9 +30,6 @@
     <ClInclude Include="Tests.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicProgrammingHeldKarp.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="branch_and_bound.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
@@ -51,7 +48,7 @@
     <ClInclude Include="City.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="TabuSearch1.h">
+    <ClInclude Include="Genetic.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -69,9 +66,6 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Tests.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="DynamicProgrammingHeldKarp.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="branch_and_bound.cpp">
@@ -92,7 +86,7 @@
     <ClCompile Include="City.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="TabuSearch1.cpp">
+    <ClCompile Include="Genetic.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
