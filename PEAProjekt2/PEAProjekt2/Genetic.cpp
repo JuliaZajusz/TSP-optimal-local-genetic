@@ -2,22 +2,43 @@
 #include <time.h>
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
+#include <algorithm>
 
 Genetic::Genetic(vector_matrix m)
 {
 	neighborhoodMatrix = m;
 
-	populationSize = 50;//////// populationSize;
-	parentPopulationSize = 25;////////// parentPopulationSize;
+	populationSize = 50;
+	parentPopulationSize = 25;
 	generationsNumber = 100; //generacje
 	mutationsProbability = 20; //mutacje %
 	swapsInMutation = 10;//ile swapów w mutacji
 
 	finalPath = vector<int>(neighborhoodMatrix.nVertices);
 	populationTab = vector< individual>(populationSize);
-	cout << "tu\n";
-	GeneticAlg();
-	// find_path(neighborhoodMatrix, iterations, initialTempCoefficient);
+	srand(time(NULL));
+	GenerateBeginningPopulation();
+	find_path();
+}
+
+Genetic::Genetic(vector_matrix m, 
+	int populationSize, 
+	int parentPopulationSize, 
+	int generationsNumber,
+	int mutationsProbability,
+	int swapsInMutation,
+	vector<individual> populationTab)
+{
+	neighborhoodMatrix = m;
+	this->populationSize = populationSize;
+	this->parentPopulationSize = parentPopulationSize;
+	this->generationsNumber = generationsNumber;
+	this->mutationsProbability = mutationsProbability;
+	this->swapsInMutation = swapsInMutation;
+	this->populationTab = populationTab;
+
+	finalPath = vector<int>(neighborhoodMatrix.nVertices);
+	find_path();
 }
 
 
@@ -26,29 +47,17 @@ Genetic::~Genetic()
 	delete[] parentsTab;
 }
 
-void Genetic::GeneticAlg()
+void Genetic::find_path()
 {
-	cout << "geneticAlg" << endl;
-	srand(time(NULL));
-	// fillParameters(parameters);
-	GenerateBeginningPopulation();
-
-	NewGeneration();
-
-	//	ChooseParents(parentPopulationSize);
-	//
-	//	/*for (int i = 0; i < parentPopulationSize; i++)
-	//	{
-	//		std::cout << parentsTab[i] << std::endl;
-	//	}*/
-	//
-	//	CrossingImplementation();
-	//
-	//	SortPopulation();
-	//
-	//	ReducePopulation();
-		//Crossing();
+	for (int i = 0; i < generationsNumber; i++)
+	{
+		cout << "Generacja " << i << endl;
+		ChooseParents(parentPopulationSize);
+		CrossingImplementation();
+		// print_result();                             //wypisywanie
+	}
 }
+
 
 
 void Genetic::GenerateBeginningPopulation()
@@ -87,20 +96,8 @@ void Genetic::GenerateRandomPermutation(vector<int>& tab)
 	}
 }
 
-void Genetic::NewGeneration()
-{
-	for (int i = 0; i < generationsNumber; i++)
-	{
-		cout << "Generacja " << i << endl;
-		ChooseParents(parentPopulationSize);
 
-		CrossingImplementation();
-		
-		print_result();
-	}
-}
-
-void Genetic::ChooseParents(int parentPopulationSize)
+void Genetic::ChooseParents(int parentPopulationSize)  //zmienic na ruletke moze, albo turniej
 {
 	parentsTab = new int[parentPopulationSize];
 	vector<int> tmpTab(populationSize);
@@ -124,7 +121,7 @@ void Genetic::ChooseParents(int parentPopulationSize)
 	}
 }
 
-Genetic::individual Genetic::Crossing(individual parent1, individual parent2, int rand1, int rand2)
+individual Genetic::Crossing(individual parent1, individual parent2, int rand1, int rand2)
 {
 	// std::cout << " CS1: " << rand1 << std::endl;			
 	// std::cout << "CS2: " << rand2 << std::endl;				
@@ -153,13 +150,13 @@ Genetic::individual Genetic::Crossing(individual parent1, individual parent2, in
 		checkForRepeat[i] = 0;
 	}
 	
-	for (int i = rand1; i < rand2; i++)				//œrodek
+	for (int i = rand1; i < rand2; i++)				//srodek
 	{
 		child.genotyp[i] = parent2.genotyp[i];
 		checkForRepeat[child.genotyp[i]] = 1;
 	}
 	
-	for (int i = 0; i < rand1; i++)				//pocz¹tek
+	for (int i = 0; i < rand1; i++)				//poczatek
 	{
 		int zm = parent1.genotyp[i];
 	
@@ -290,6 +287,12 @@ void Genetic::Sortowanie(vector<individual> & population, int size)
 	}
 }
 
+
+// bool Genetic::Sort(individual a, individual b)
+// {
+// 	return (a.cost < b.cost);
+// }
+
 void Genetic::SortPopulation(vector<individual> & population)
 {
 	for (int i = 0; i < population.size(); i++)
@@ -298,8 +301,9 @@ void Genetic::SortPopulation(vector<individual> & population)
 		population[i].cost = koszt;
 
 	}
-	Sortowanie(population, population.size());  // // using function as comp
-													//std::sort(myvector.begin(), myvector.end(), myfunction);
+	Sortowanie(population, population.size());  
+	// using function as comp												
+	// std::sort(population.begin(), population.end(), Genetic::Sort);
 }
 
 
