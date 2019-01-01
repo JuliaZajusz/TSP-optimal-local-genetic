@@ -9,7 +9,7 @@ Genetic::Genetic(vector_matrix m)
 
 	populationSize = 50;//////// populationSize;
 	parentPopulationSize = 25;////////// parentPopulationSize;
-	generationsNumber = 10; //generacje
+	generationsNumber = 100; //generacje
 	mutationsProbability = 20; //mutacje %
 	swapsInMutation = 10;//ile swapów w mutacji
 
@@ -96,16 +96,13 @@ void Genetic::NewGeneration()
 
 		CrossingImplementation();
 		
-		// SortPopulation();
-		//
-		// ReducePopulation();
+		print_result();
 	}
 }
 
 void Genetic::ChooseParents(int parentPopulationSize)
 {
 	parentsTab = new int[parentPopulationSize];
-	// int * tmpTab = new int[populationSize];
 	vector<int> tmpTab(populationSize);
 
 	int iloscSwap = rand() % populationSize;
@@ -125,12 +122,28 @@ void Genetic::ChooseParents(int parentPopulationSize)
 	{
 		parentsTab[i] = tmpTab[i];
 	}
-
-	// delete[] tmpTab;
 }
 
 Genetic::individual Genetic::Crossing(individual parent1, individual parent2, int rand1, int rand2)
 {
+	// std::cout << " CS1: " << rand1 << std::endl;			
+	// std::cout << "CS2: " << rand2 << std::endl;				
+	// std::cout << "parent1: ";				
+	// for(int i =0; i<parent1.genotyp.size(); i++)
+	// {
+	// 	cout << parent1.genotyp[i] << " ";
+	// }
+	// cout << endl;
+	//
+	// std::cout << "parent2: ";
+	// for (int i = 0; i < parent2.genotyp.size(); i++)
+	// {
+	// 	cout << parent2.genotyp[i] << " ";
+	// }
+	// cout << endl;
+	// cout << endl;
+
+
 	individual child;
 	child.genotyp = vector<int>(neighborhoodMatrix.nVertices);
 	
@@ -201,30 +214,16 @@ Genetic::individual Genetic::Crossing(individual parent1, individual parent2, in
 
 void Genetic::CrossingImplementation()  //rozmnazanie
 {
-	// individual * tmpIndividual = new individual[populationSize + 2 * (floor(parentPopulationSize / 2)) + 1];
-	vector<individual> tmpIndividual = vector<individual>(populationSize +  2 * (floor(parentPopulationSize / 2)));
+	vector<individual> tmpIndividual = vector<individual>(populationSize +  2 * (floor(parentPopulationSize / 2))); //utworzenie zmiennej dla populacji z dziecmi
 
 	for (int i = 0; i < populationSize; i++)
 	{
-		tmpIndividual[i] = populationTab[i];
-		cout <<"i: "<<i<< endl;
-		for(int j=0; j<neighborhoodMatrix.nVertices; j++)
-		{
-			cout << populationTab[i].genotyp[j] << " ";
-		}
-		cout << endl;
+		tmpIndividual[i] = populationTab[i];  //przekopiowana cała populacja (50)
 	}
-	cout<< "liczba par rodzicow: " << floor(parentPopulationSize / 2) << endl;
-	for (int i = 0; i < floor(parentPopulationSize / 2); i++)  //dla kazdej pary rodzicow
+	for (int i = 0; i < floor(parentPopulationSize / 2); i++)  //dla kazdej pary rodzicow utworz pare dzieci
 	{
-		//tmpIndividual = vector<individual>(populationSize + 2 * (floor(parentPopulationSize / 2)));
 		int crossPoint1 = rand() % (neighborhoodMatrix.nVertices - 1);
-		int crossPoint2 = rand() % ((neighborhoodMatrix.nVertices - crossPoint1 - 1) + crossPoint1 + 1);
-		// std::cout << i << " CS1: " << crossPoint1 << std::endl;					//TODO: do usuniecia
-		// std::cout << "CS2: " << crossPoint2 << std::endl;					//TODO: do usuniecia
-
-		cout <<"i: "<<  i<< endl;
-		cout<<" "<< populationTab[parentsTab[2 * i]].genotyp[0] << " " << populationTab[parentsTab[(2 * i) + 1]].genotyp[0] << endl;
+		int crossPoint2 = rand() % (neighborhoodMatrix.nVertices - crossPoint1 - 1) + crossPoint1 + 1;
 
 		individual a = Crossing(populationTab[parentsTab[2 * i]], populationTab[parentsTab[(2 * i) + 1]], crossPoint1, crossPoint2);  //dziecko1
 		individual b = Crossing(populationTab[parentsTab[(2 * i) + 1]], populationTab[parentsTab[(2 * i)]], crossPoint1, crossPoint2);  //dziecko2
@@ -233,27 +232,29 @@ void Genetic::CrossingImplementation()  //rozmnazanie
 		tmpIndividual[populationSize + (2 * i)] = a;
 		tmpIndividual[populationSize + ((2 * i) + 1)] = b;
 
-		//std::cout << "Genotyp dzieci" << std::endl;
-		/*for (int x = 0; x < dimension; x++)
-		{
+		
+		// cout << "i:" << i << " index: " << populationSize + (2 * i) << endl;
+		// for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
+		// {
+		// 	cout << a.genotyp[j] << " ";
+		// }
+		// cout << endl;
+		//
+		// cout << "i:" << i << " index: " << populationSize + ((2 * i) + 1) << endl;
+		// for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
+		// {
+		// 	cout << b.genotyp[j] << " ";
+		// }
+		// cout << endl;
 
-			std::cout << tmpIndividual[populationSize + ((2 * i) + 1)].genotyp[x] << " ";
-		}
-		std::cout << std::endl;
-
-		for (int x = 0; x < dimension; x++)
-		{
-
-			std::cout << tmpIndividual[populationSize + (2 * i)].genotyp[x] << " ";
-		}
-		std::cout << std::endl;*/
 	}
-	cout << "po malej petli" << endl;
-	// delete[] populationTab;
-	//populationSize = populationSize + parentPopulationSize;
-	//populationTab = vector<individual>(populationSize);
 
-	cout << "prawie koniec" << endl;
+		SortPopulation(tmpIndividual);
+		
+		finalPath = tmpIndividual[0].genotyp;
+		finalCost = tmpIndividual[0].cost;
+
+	
 	for (int i = 0; i < populationSize-1; i++)
 	{
 		populationTab[i] = tmpIndividual[i];
@@ -261,8 +262,6 @@ void Genetic::CrossingImplementation()  //rozmnazanie
 	}
 	//tmpIndividual.clear();
 
-
-	cout << "koniec" << endl;
 }
 
 void Genetic::Mutation(individual & child)
@@ -270,90 +269,41 @@ void Genetic::Mutation(individual & child)
 	int chance = rand() % 100;
 	if (chance <= mutationsProbability)
 	{
-		// std::cout << "MUTACJAAAAAAA" << std::endl;
 		for (int i = 0; i < swapsInMutation; i++)
 		{
 			int city1 = rand() % (neighborhoodMatrix.nVertices );
 			int city2 = rand() % (neighborhoodMatrix.nVertices );
-			// cout << city1 << " " << city2 << endl;
 			swapS(child.genotyp, city1, city2);
 		}
 	}
-	//
-	// return child;
 }
 
-
-
-void Genetic::ReducePopulation()
+void Genetic::Sortowanie(vector<individual> & population, int size)
 {
-	individual * tmpPopulation = new individual[populationSize];
-
-	for (int i = 0; i < populationSize; i++)
-	{
-		tmpPopulation[i] = populationTab[i];
-	}
-
-	populationTab = vector<individual>(populationSize);
-	for (int i = 0; i < populationSize; i++)
-	{
-		populationTab[i] = tmpPopulation[i];
-	}
-
-	finalPath = populationTab[0].genotyp;
-	finalCost = populationTab[0].cost;
-}
-
-
-
-void Genetic::Sortowanie(vector<individual> populationTab, int size)
-{
-
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size - 1; j++)
 		{
-			if (populationTab[j].cost > populationTab[j + 1].cost)
-				std::swap(populationTab[j], populationTab[j + 1]);
-
+			if (population[j].cost > population[j + 1].cost)
+				std::swap(population[j], population[j + 1]);
 		}
 	}
 }
 
-void Genetic::SortPopulation()
+void Genetic::SortPopulation(vector<individual> & population)
 {
-	int * costTab = new int[populationSize];
-
-	for (int i = 0; i < populationSize; i++)
+	for (int i = 0; i < population.size(); i++)
 	{
-		int koszt = calculatePathCost(populationTab[i].genotyp);
-		populationTab[i].cost = koszt;
+		int koszt = calculatePathCost(population[i].genotyp);
+		population[i].cost = koszt;
 
 	}
-
-	Sortowanie(populationTab, populationSize);
-
+	Sortowanie(population, population.size());  // // using function as comp
+													//std::sort(myvector.begin(), myvector.end(), myfunction);
 }
 
 
 
-
-
-
-
-
-
-
-// int Genetic::CountPathLength(int* cityPermutation, int** tab, int dimension)
-// {
-// 	int sum = 0;
-// 	for (int i = 0; i < dimension - 1; ++i)
-// 	{
-// 		sum += tab[cityPermutation[i]][cityPermutation[i + 1]];
-// 	}
-// 	sum += tab[cityPermutation[dimension - 1]][cityPermutation[0]];
-// 	return sum;
-// }
 
 int Genetic::calculatePathCost(vector<int> path)
 {
@@ -368,7 +318,6 @@ int Genetic::calculatePathCost(vector<int> path)
 
 void Genetic::swapS(vector<int>& permutation, int i, int j)
 {
-	// cout << "a" << endl;
 	int temp = permutation[i];
 	permutation[i] = permutation[j];
 	permutation[j] = temp;

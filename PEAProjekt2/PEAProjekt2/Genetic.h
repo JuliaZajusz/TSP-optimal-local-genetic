@@ -41,17 +41,15 @@ public:
 	void GenerateRandomPermutation(vector<int> & tab);
 	void GeneticAlg();
 	void GenerateBeginningPopulation();
-	// int CountPathLength(int* cityPermutation, int** tab, int dimension);
 	void swapS(vector<int>& permutation, int i, int j);
 	void ChooseParents(int parentPopulationSize);
 	individual Crossing(individual parent1, individual parent2, int rand1, int rand2);
 	void CrossingImplementation();
 	void Mutation(individual & child);
-	void Sortowanie(vector<individual> populationTab, int size);
-	void ReducePopulation();
+	void Sortowanie(vector<individual> & population, int size);
 	void NewGeneration();
 
-	void SortPopulation();
+	void SortPopulation(vector<individual>  & population);
 
 	int calculatePathCost(vector<int> path);
 	void print_result();
