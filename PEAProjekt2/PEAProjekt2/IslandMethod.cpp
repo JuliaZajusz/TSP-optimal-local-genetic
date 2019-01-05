@@ -18,7 +18,9 @@ using namespace std;
 
 vector<individual> IslandMethod::doGenetic(vector_matrix n, int populationSize,  vector<individual> populationTab, int threadNumber)
 {
-	GeneticForIslandMethod gen = *new GeneticForIslandMethod(n, populationTab.size(), populationTab.size()/2, 1, 20, 10, populationTab, threadNumber == 1 ? true: false); 
+	GeneticForIslandMethod gen = *new GeneticForIslandMethod(n, populationTab.size(), populationTab.size()/2, 1, 20, 10, populationTab, false); 
+	// GeneticForIslandMethod gen = *new GeneticForIslandMethod(n, populationTab.size(), populationTab.size()/2, 1, 20, 10, populationTab, true); 
+	// GeneticForIslandMethod gen = *new GeneticForIslandMethod(n, populationTab.size(), populationTab.size()/2, 1, 20, 10, populationTab, threadNumber == 1 ? true: false); 
 	//    vector_matrix m,
 																																  //    int populationSize,
 																																  //	int parentPopulationSize,
@@ -27,74 +29,50 @@ vector<individual> IslandMethod::doGenetic(vector_matrix n, int populationSize, 
 																																  //	int swapsInMutation,
 																																  //	vector<individual> populationTab
 // gen.print_result();
-	if (threadNumber == 0)
-	{
-		if (bestIndividual.cost < gen.finalCost)
-		{
-			bestIndividual.cost = gen.finalCost;
-			bestIndividual.genotyp = gen.finalPath;
-		}
-	}
 
-	if(threadNumber == 1)
-	{
-		if (bestIndividual1.cost < gen.finalCost)
-		{
-			bestIndividual1.cost = gen.finalCost;
-			bestIndividual1.genotyp = gen.finalPath;
-		}
-	}
-	if (threadNumber == 2)
-	{
-		if (bestIndividual2.cost < gen.finalCost)
-		{
-			bestIndividual2.cost = gen.finalCost;
-			bestIndividual2.genotyp = gen.finalPath;
-		}
-	}
-	// if(bestIndividual.cost < gen.finalCost)
+	// if(threadNumber ==0)
 	// {
 	// 	bestIndividual.cost = gen.finalCost;
 	// 	bestIndividual.genotyp = gen.finalPath;
 	// }
-
-	// return gen.getPopulationTab()[rand() % populationTab.size()];
+		bestIndividuals[threadNumber].cost = gen.finalCost;
+		bestIndividuals[threadNumber].genotyp = gen.finalPath;
 	return gen.getPopulationTab();
 }
 
 
-IslandMethod::IslandMethod(vector_matrix m)
+IslandMethod::IslandMethod(vector_matrix m, int populationSize, int generations, int islands)
 {
-	int populationSize = 50;
+	this->populationSize = populationSize;
 	neighborhoodMatrix = m;
+	this->generations = generations;
+	this->islands = islands;
 	populationTab = GenerateBeginningPopulation(populationSize);
+	bestIndividuals = vector<individual>(islands);
 	find_path();
 }
 
 
 int IslandMethod::find_path()
 {
-	int generations = 10;
-	int islands = 2;
+	// int generations = 10;
+	// int islands = 2;
 	vector<individual> data = populationTab;
-	size_t const half_size = data.size() / 2;
-	vector<individual> lowHalf(data.begin(), data.begin() + half_size);
-	vector<individual> lowHalfSingle(data.begin(), data.begin() + half_size);
-	vector<individual> highHalf(data.begin() + half_size, data.end());
+	vector<vector<individual>> islandsData = vector<vector<individual>>(islands);
+	vector<future<vector<individual>>> futures= vector<future<vector<individual>>>(islands);
+	vector<int> migratingUnitIdx = vector<int>(islands);
+	size_t const island_population_size = data.size() / islands;
 
+	// vector<individual> lowHalfSingle(data.begin(), data.begin() + island_population_size);
+
+	for(int i =0; i<islands; i++)
 	{
-		// findMin(exampleData1);
-
-		// thread first(doGenetic, neighborhoodMatrix, 50, lowHalf);
-		// thread second(doGenetic, neighborhoodMatrix, 50, highHalf);  // spawn new thread that calls findMin(highHalf)
-
-		// future<individual> firstRet = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, lowHalf);
-		// future<individual> secondRet = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, highHalf);
+		islandsData[i] = vector<individual> (data.begin() + i * island_population_size, data.begin() + (i+1)* island_population_size);
 	}
 
-	for (int i = 0; i < generations; i++)
+	for (int h = 0; h < generations; h++)
 	{
-		cout << "Generacja " << i << endl;
+		cout << "Generacja " << h << endl;
 		// {cout << "populationIsland_1: " << endl;
 		// for (int j = 0; j < lowHalf.size(); j++)
 		// {
@@ -109,46 +87,45 @@ int IslandMethod::find_path()
 		// cout << endl;
 		// }
 
-		future<vector<individual>> firstRetSingle = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, lowHalfSingle, 0);
-		future<vector<individual>> firstRet = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, lowHalf, 1);
-		future<vector<individual>> secondRet = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, highHalf, 2);
-
-		int migratingUnit_1_Idx = rand() % half_size;
-		int migratingUnit_2_Idx = rand() % half_size;
-
-		lowHalf = firstRet.get();
-		lowHalfSingle = firstRetSingle.get();
-		highHalf = secondRet.get();
-
-		cout << "migratingUnit_1_Idx: " << migratingUnit_1_Idx << endl;;
-		cout << "migratingUnit_2_Idx: " << migratingUnit_2_Idx << endl;
+		// future<vector<individual>> firstRetSingle = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, lowHalfSingle, 0);
+		// lowHalfSingle = firstRetSingle.get();
+		// cout << "najlepszySingle: " << bestIndividual.cost << endl << endl;
 		
-		cout << "migratingUnit_1: " << lowHalf[migratingUnit_1_Idx].cost << endl;
-		for (int j = 0; j < lowHalf[migratingUnit_1_Idx].genotyp.size(); j++)
+		for (int i = 0; i < islands; i++)
 		{
-			cout << lowHalf[migratingUnit_1_Idx].genotyp[j] << " ";
+			futures[i] = async(&IslandMethod::doGenetic, this, neighborhoodMatrix, 50, islandsData[i], i);
+			migratingUnitIdx[i] = rand() % island_population_size;
+			islandsData[i] = futures[i].get();
 		}
-		cout << endl;
+
+		// for (int i = 0; i < islands; i++)
+		// {
+		// 	cout << "migratingUnitIdx[" << i << "]: " << migratingUnitIdx[i] << endl;		
+		// 	cout << islandsData[i][migratingUnitIdx[i]].cost << endl;
+		// 	for (int j = 0; j < islandsData[i][migratingUnitIdx[i]].genotyp.size(); j++)
+		// 	{
+		// 		cout << islandsData[i][migratingUnitIdx[i]].genotyp[j] << " ";
+		// 	}
+		// 	cout << endl;
+		// }
 		
 		
-		cout << "migratingUnit_2: " << highHalf[migratingUnit_2_Idx].cost << endl;
-		for (int j = 0; j < highHalf[migratingUnit_2_Idx].genotyp.size(); j++)
+		for (int i = 0; i < islands -1; i++)
 		{
-			cout << highHalf[migratingUnit_2_Idx].genotyp[j] << " ";
+			individual tmp = islandsData[i][migratingUnitIdx[i]];
+			islandsData[i][migratingUnitIdx[i]] = islandsData[i+1][migratingUnitIdx[i+1]];
+			islandsData[i + 1][migratingUnitIdx[i + 1]] = tmp;
 		}
-		cout << endl;
-		individual tmp = lowHalf[migratingUnit_1_Idx];
-		lowHalf[migratingUnit_1_Idx] = highHalf[migratingUnit_2_Idx];
-		highHalf[migratingUnit_2_Idx] = tmp;
+		islandsData[islands-1][migratingUnitIdx[islands-1]]= islandsData[0][migratingUnitIdx[0]];
 
 		cout << endl;
-		cout << "najlepszySingle: " << bestIndividual.cost << endl << endl;
-		cout << "najlepszy1: " << bestIndividual1.cost << endl << endl;
-		cout << "najlepszy2: " << bestIndividual2.cost << endl << endl;
+		
+	
+		for (int i = 0; i < islands; i++)
+		{
+			cout << "najlepszy"<<i<<": " << bestIndividuals[i].cost << endl << endl;
+		}
 	}
-
-
-
 	return 0;
 }
 
@@ -156,7 +133,6 @@ int IslandMethod::find_path()
 
 vector<individual> IslandMethod::GenerateBeginningPopulation(int populationSize)
 {
-	cout << "poczatek GenerateBeginningPopulation" << endl;
 	vector<individual> tab(populationSize);
 	for (int i = 0; i < populationSize; i++)
 	{
@@ -166,7 +142,6 @@ vector<individual> IslandMethod::GenerateBeginningPopulation(int populationSize)
 		tab[i].cost = calculatePathCost(tmpTab);
 		tmpTab.clear();
 	}
-	cout << "koniec GenerateBeginningPopulation" << endl;
 	return tab;
 }
 

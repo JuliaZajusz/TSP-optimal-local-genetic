@@ -87,24 +87,6 @@ void GeneticForIslandMethod::ChooseParentsTournament(int parentPopulationSize)  
 
 individual GeneticForIslandMethod::Crossing(individual parent1, individual parent2, int rand1, int rand2)
 {
-	// std::cout << " CS1: " << rand1 << std::endl;			
-	// std::cout << "CS2: " << rand2 << std::endl;				
-	// std::cout << "parent1: ";				
-	// for(int i =0; i<parent1.genotyp.size(); i++)
-	// {
-	// 	cout << parent1.genotyp[i] << " ";
-	// }
-	// cout << endl;
-	//
-	// std::cout << "parent2: ";
-	// for (int i = 0; i < parent2.genotyp.size(); i++)
-	// {
-	// 	cout << parent2.genotyp[i] << " ";
-	// }
-	// cout << endl;
-	// cout << endl;
-
-
 	individual child;
 	child.genotyp = vector<int>(neighborhoodMatrix.nVertices);
 
@@ -269,10 +251,6 @@ void GeneticForIslandMethod::SortPopulation(vector<individual> & population)
 	// using function as comp												
 	// std::sort(population.begin(), population.end(), Genetic::Sort);
 
-
-	// population.erase(unique(population.begin(), population.end()), population.end());
-	 // cout << unique(population[0], population[0]).cost  << endl;
-	 // std::unique(population[0], population[0]) ? cout << "true" << endl : cout << "false" << endl;
 
 	 auto comp = [](const individual& lhs, const individual& rhs) {return lhs.cost == rhs.cost && lhs.genotyp == rhs.genotyp; };
 	 auto last = std::unique(population.begin(), population.end(), comp);

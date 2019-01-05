@@ -6,10 +6,15 @@ class IslandMethod
 	vector_matrix neighborhoodMatrix;
 	vector<individual> populationTab;
 	individual bestIndividual = individual();
-	individual bestIndividual1 = individual();
-	individual bestIndividual2 = individual();
+	// individual bestIndividual1 = individual();
+	// individual bestIndividual2 = individual();
+	int islands;
+	int populationSize;
+	int generations;
+	vector<individual> bestIndividuals;
+
 public:
-	IslandMethod(vector_matrix m);
+	IslandMethod(vector_matrix m, int populationSize, int generations, int islands);
 	vector<individual> GenerateBeginningPopulation(int populationSize);
 	void GenerateRandomPermutation(vector<int> & tab);
 	void swapS(vector<int>& permutation, int i, int j);
