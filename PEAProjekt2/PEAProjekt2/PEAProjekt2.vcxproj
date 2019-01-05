@@ -156,6 +156,7 @@
     <ClInclude Include="City.h" />
     <ClInclude Include="DynamicProgramming.h" />
     <ClInclude Include="Genetic.h" />
+    <ClInclude Include="GeneticForIslandMethod.h" />
     <ClInclude Include="IslandMethod.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="PEAProjekt2.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="City.cpp" />
     <ClCompile Include="DynamicProgramming.cpp" />
     <ClCompile Include="Genetic.cpp" />
+    <ClCompile Include="GeneticForIslandMethod.cpp" />
     <ClCompile Include="IslandMethod.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="PEAProjekt2.cpp" />

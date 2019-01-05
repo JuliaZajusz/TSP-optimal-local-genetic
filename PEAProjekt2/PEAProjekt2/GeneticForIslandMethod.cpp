@@ -1,38 +1,18 @@
-﻿#include "Genetic.h"
+﻿#include "GeneticForIslandMethod.h"
 #include <time.h>
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
 #include <algorithm>
 
-bool operator==(const individual& lhs, const individual& rhs)
-{
-	return lhs.cost == rhs.cost && lhs.genotyp == rhs.genotyp;
-}
 
-Genetic::Genetic(vector_matrix m)
-{
-	neighborhoodMatrix = m;
-
-	populationSize = 50;
-	parentPopulationSize = 25;
-	generationsNumber = 100; //generacje
-	mutationsProbability = 20; //mutacje %
-	swapsInMutation = 10;//ile swapów w mutacji
-
-	finalPath = vector<int>(neighborhoodMatrix.nVertices);
-	populationTab = vector< individual>(populationSize);
-	srand(time(NULL));
-	GenerateBeginningPopulation();
-	find_path();
-}
-
-Genetic::Genetic(vector_matrix m, 
-	int populationSize, 
-	int parentPopulationSize, 
+GeneticForIslandMethod::GeneticForIslandMethod(vector_matrix m,
+	int populationSize,
+	int parentPopulationSize,
 	int generationsNumber,
 	int mutationsProbability,
 	int swapsInMutation,
-	vector<individual> populationTab)
+	vector<individual> populationTab,
+	bool print)
 {
 	neighborhoodMatrix = m;
 	this->populationSize = populationSize;
@@ -41,20 +21,13 @@ Genetic::Genetic(vector_matrix m,
 	this->mutationsProbability = mutationsProbability;
 	this->swapsInMutation = swapsInMutation;
 	this->populationTab = populationTab;
+	this->print = print;
 
 	finalPath = vector<int>(neighborhoodMatrix.nVertices);
 	find_path();
 }
 
-
-Genetic::~Genetic()
-{
-	delete[] parentsTab;
-}
-
-
-
-void Genetic::find_path()
+void GeneticForIslandMethod::find_path()
 {
 	for (int i = 0; i < generationsNumber; i++)
 	{
@@ -62,54 +35,17 @@ void Genetic::find_path()
 	}
 }
 
-void Genetic::doNewGeneration(int i)
+void GeneticForIslandMethod::doNewGeneration(int i)
 {
-	cout << "Generacja " << i << endl;
-	ChooseParents(parentPopulationSize);
+	// ChooseParents(parentPopulationSize);
+	ChooseParentsTournament(parentPopulationSize);
 	CrossingImplementation();
-	// print_result();                             //wypisywanie
-}
-
-void Genetic::GenerateBeginningPopulation()
-{
-
-	for (int i = 0; i < populationSize; i++)
-	{
-		vector<int> tmpTab(neighborhoodMatrix.nVertices);
-
-		GenerateRandomPermutation(tmpTab);
-		populationTab[i].genotyp = tmpTab;
-	}
-
-	// for (int i = 0; i < populationSize; i++)
-	// {
-	// 	for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
-	// 	{
-	// 		std::cout << populationTab[i].genotyp[j] << " ";
-	// 	}
-	// 	std::cout << "DL: " << calculatePathCost(populationTab[i].genotyp);
-	// 	std::cout << std::endl;
-	// }
-}
-
-void Genetic::GenerateRandomPermutation(vector<int>& tab)
-{
-	for (int i = 0; i < tab.size(); i++)
-	{
-		tab[i] = i;
-	}
-
-	for (int i = 0; i < tab.size(); i++)
-	{
-		int r = rand() % (tab.size() - i);
-		swapS(tab, r, tab[i + r]);
-	}
 }
 
 
-void Genetic::ChooseParents(int parentPopulationSize)  //zmienic na ruletke moze, albo turniej
+void GeneticForIslandMethod::ChooseParents(int parentPopulationSize)  //zmienic na ruletke moze, albo turniej
 {
-	parentsTab = new int[parentPopulationSize];
+	parentsTab = vector<int>(parentPopulationSize);
 	vector<int> tmpTab(populationSize);
 
 	int iloscSwap = rand() % populationSize;
@@ -131,7 +67,25 @@ void Genetic::ChooseParents(int parentPopulationSize)  //zmienic na ruletke moze
 	}
 }
 
-individual Genetic::Crossing(individual parent1, individual parent2, int rand1, int rand2)
+void GeneticForIslandMethod::ChooseParentsTournament(int parentPopulationSize)  //zmienic na ruletke moze, albo turniej
+{
+	parentsTab = vector<int>(parentPopulationSize);
+
+	for (int i = 0; i < parentPopulationSize; i++)
+	{
+		int ra = rand() % populationSize;
+		int ra2 = rand() % populationSize;
+		if(populationTab[ra].cost <= populationTab[ra2].cost)
+		{
+			parentsTab[i] = ra;
+		} else
+		{
+			parentsTab[i] = ra2;
+		}
+	}
+}
+
+individual GeneticForIslandMethod::Crossing(individual parent1, individual parent2, int rand1, int rand2)
 {
 	// std::cout << " CS1: " << rand1 << std::endl;			
 	// std::cout << "CS2: " << rand2 << std::endl;				
@@ -153,23 +107,23 @@ individual Genetic::Crossing(individual parent1, individual parent2, int rand1, 
 
 	individual child;
 	child.genotyp = vector<int>(neighborhoodMatrix.nVertices);
-	
+
 	int * checkForRepeat = new int[neighborhoodMatrix.nVertices];
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
 	{
 		checkForRepeat[i] = 0;
 	}
-	
+
 	for (int i = rand1; i < rand2; i++)				//srodek
 	{
 		child.genotyp[i] = parent2.genotyp[i];
 		checkForRepeat[child.genotyp[i]] = 1;
 	}
-	
+
 	for (int i = 0; i < rand1; i++)				//poczatek
 	{
 		int zm = parent1.genotyp[i];
-	
+
 		if (checkForRepeat[zm] == 0)
 		{
 			child.genotyp[i] = zm;
@@ -180,11 +134,11 @@ individual Genetic::Crossing(individual parent1, individual parent2, int rand1, 
 			child.genotyp[i] = -510;
 		}
 	}
-	
+
 	for (int i = rand2; i < neighborhoodMatrix.nVertices; i++)			//koniec
 	{
 		int zm = parent1.genotyp[i];
-	
+
 		if (checkForRepeat[zm] == 0)
 		{
 			child.genotyp[i] = zm;
@@ -195,7 +149,7 @@ individual Genetic::Crossing(individual parent1, individual parent2, int rand1, 
 			child.genotyp[i] = -510;
 		}
 	}
-	
+
 	int s = 0;
 	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
 	{
@@ -210,7 +164,7 @@ individual Genetic::Crossing(individual parent1, individual parent2, int rand1, 
 					break;
 				}
 			}
-	
+
 		}
 	}
 	delete[] checkForRepeat;
@@ -219,9 +173,9 @@ individual Genetic::Crossing(individual parent1, individual parent2, int rand1, 
 	return parent1;
 }
 
-void Genetic::CrossingImplementation()  //rozmnazanie
+void GeneticForIslandMethod::CrossingImplementation()  //rozmnazanie
 {
-	vector<individual> tmpIndividual = vector<individual>(populationSize +  2 * (floor(parentPopulationSize / 2))); //utworzenie zmiennej dla populacji z dziecmi
+	vector<individual> tmpIndividual = vector<individual>(populationSize + 2 * (floor(parentPopulationSize / 2))); //utworzenie zmiennej dla populacji z dziecmi
 
 	for (int i = 0; i < populationSize; i++)
 	{
@@ -239,7 +193,7 @@ void Genetic::CrossingImplementation()  //rozmnazanie
 		tmpIndividual[populationSize + (2 * i)] = a;
 		tmpIndividual[populationSize + ((2 * i) + 1)] = b;
 
-		
+
 		// cout << "i:" << i << " index: " << populationSize + (2 * i) << endl;
 		// for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
 		// {
@@ -256,36 +210,36 @@ void Genetic::CrossingImplementation()  //rozmnazanie
 
 	}
 
-		SortPopulation(tmpIndividual);
-		
-		finalPath = tmpIndividual[0].genotyp;
-		finalCost = tmpIndividual[0].cost;
+	SortPopulation(tmpIndividual);
 
-	
-	for (int i = 0; i < populationSize-1; i++)
+	finalPath = tmpIndividual[0].genotyp;
+	finalCost = tmpIndividual[0].cost;
+
+
+	for (int i = 0; i < populationSize; i++)
 	{
 		populationTab[i] = tmpIndividual[i];
-	
+
 	}
 	//tmpIndividual.clear();
 
 }
 
-void Genetic::Mutation(individual & child)
+void GeneticForIslandMethod::Mutation(individual & child)
 {
 	int chance = rand() % 100;
 	if (chance <= mutationsProbability)
 	{
 		for (int i = 0; i < swapsInMutation; i++)
 		{
-			int city1 = rand() % (neighborhoodMatrix.nVertices );
-			int city2 = rand() % (neighborhoodMatrix.nVertices );
+			int city1 = rand() % (neighborhoodMatrix.nVertices);
+			int city2 = rand() % (neighborhoodMatrix.nVertices);
 			swapS(child.genotyp, city1, city2);
 		}
 	}
 }
 
-void Genetic::Sortowanie(vector<individual> & population, int size)
+void GeneticForIslandMethod::Sortowanie(vector<individual> & population, int size)
 {
 	for (int i = 0; i < size; i++)
 	{
@@ -303,7 +257,7 @@ void Genetic::Sortowanie(vector<individual> & population, int size)
 // 	return (a.cost < b.cost);
 // }
 
-void Genetic::SortPopulation(vector<individual> & population)
+void GeneticForIslandMethod::SortPopulation(vector<individual> & population)
 {
 	for (int i = 0; i < population.size(); i++)
 	{
@@ -311,15 +265,42 @@ void Genetic::SortPopulation(vector<individual> & population)
 		population[i].cost = koszt;
 
 	}
-	Sortowanie(population, population.size());  
+	Sortowanie(population, population.size());
 	// using function as comp												
 	// std::sort(population.begin(), population.end(), Genetic::Sort);
+
+
+	// population.erase(unique(population.begin(), population.end()), population.end());
+	 // cout << unique(population[0], population[0]).cost  << endl;
+	 // std::unique(population[0], population[0]) ? cout << "true" << endl : cout << "false" << endl;
+
+	 auto comp = [](const individual& lhs, const individual& rhs) {return lhs.cost == rhs.cost && lhs.genotyp == rhs.genotyp; };
+	 auto last = std::unique(population.begin(), population.end(), comp);
+	 population.erase(last, population.end());
+
+	if (print) {
+		cout << endl;
+		cout << endl;
+		{cout << "POPULACJA PO SORTOWANIU: " << endl;
+		for (int j = 0; j < population.size(); j++)
+		{
+			cout << j << ": " << endl << population[j].cost << ",        ";
+			for (int k = 0; k < population[j].genotyp.size(); k++)
+			{
+				cout << population[j].genotyp[k] << " ";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << endl;
+		}
+	}
 }
 
 
 
 
-int Genetic::calculatePathCost(vector<int> path)
+int GeneticForIslandMethod::calculatePathCost(vector<int> path)
 {
 	int cost = 0;
 	for (int i = 0; i < path.size() - 1; i++)
@@ -330,7 +311,7 @@ int Genetic::calculatePathCost(vector<int> path)
 	return cost;
 }
 
-void Genetic::swapS(vector<int>& permutation, int i, int j)
+void GeneticForIslandMethod::swapS(vector<int>& permutation, int i, int j)
 {
 	int temp = permutation[i];
 	permutation[i] = permutation[j];
@@ -338,7 +319,7 @@ void Genetic::swapS(vector<int>& permutation, int i, int j)
 }
 
 
-void Genetic::print_result()
+void GeneticForIslandMethod::print_result()
 {
 	// cout << "Sciezka: " << endl;
 	// for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
@@ -358,4 +339,9 @@ void Genetic::print_result()
 	cout << finalPath[0] << endl;
 	cout << "wagaSciezki = " << calculatePathCost(finalPath) << endl;
 	cout << endl;
+}
+
+vector<individual> GeneticForIslandMethod::getPopulationTab()
+{
+	return populationTab;
 }
