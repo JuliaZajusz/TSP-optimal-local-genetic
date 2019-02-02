@@ -2,6 +2,7 @@
 
 #include "matrix.h"
 #include "VectorMatrix.h"
+#include <chrono>
 
 class SimulatedAnnealing {
 	vector_matrix neighborhoodMatrix;
@@ -10,6 +11,8 @@ class SimulatedAnnealing {
 	int iterations;
 	float initialTempCoefficient;
 	int warunekZatrzymania;
+	std::chrono::steady_clock::time_point counterStart;
+
 public:
 	SimulatedAnnealing();
 	SimulatedAnnealing(vector_matrix m);
@@ -22,4 +25,7 @@ public:
 	int getIterations();
 	int getInternalIterations();
 	float getInitialTempCoefficient();
+	void startCounter();
+	double getCounter();
+	vector<int> getRandomGreedyPath(int v);
 };

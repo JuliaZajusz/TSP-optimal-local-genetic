@@ -37,8 +37,8 @@ public:
 		int parentPopulationSize,
 		int generationsNumber,
 		int mutationsProbability,
-		int swapsInMutation,
-		vector<individual> populationTab);
+		int swapsInMutation
+	);
 	~Genetic();
 	void doNewGeneration(int i);
 	void find_path();

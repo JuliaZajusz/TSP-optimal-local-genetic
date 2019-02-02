@@ -13,6 +13,7 @@ class IslandMethod
 	int generations;
 	vector<individual> bestIndividuals;
 	int migrators;
+	std::chrono::steady_clock::time_point counterStart;
 
 public:
 	IslandMethod(vector_matrix m, int populationSize, int generations, int islands, int migrators);
@@ -23,5 +24,9 @@ public:
 	vector<individual> doGenetic(vector_matrix n, int populationSize, vector<individual> populationTab, int threadNumber);
 	int calculatePathCost(vector<int> path);
 	individual getBest(vector<individual> individuals);
+	individual getBestIndividual();
+	void startCounter();
+	double getCounter();
+	vector<int> getRandomGreedyPath(int v);
 };
 

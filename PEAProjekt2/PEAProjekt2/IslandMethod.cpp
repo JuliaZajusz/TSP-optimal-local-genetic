@@ -7,14 +7,16 @@
 #include <future>
 using namespace std;
 
-// vector<int> exampleData1 = { 8,4,2,7,1,4,9,3,5,6 };
+/* uruchomienie pomiaru czasu */
+void IslandMethod::startCounter() {
+	counterStart = chrono::steady_clock::now();
+}
 
-//
-// int findMin(vector<int> vec)
-// {
-// 	cout << *min_element(vec.begin(), vec.end()) << endl;
-// 	return *min_element(vec.begin(), vec.end());
-// }
+/* zwraca czas pomiaru podany w ms */
+double IslandMethod::getCounter() {
+	auto end = chrono::steady_clock::now();
+	return std::chrono::duration_cast<std::chrono::duration<double>>(end - counterStart).count() * 1000;
+}
 
 vector<individual> IslandMethod::doGenetic(vector_matrix n, int populationSize,  vector<individual> populationTab, int threadNumber)
 {
@@ -63,6 +65,8 @@ int IslandMethod::find_path()
 	size_t const island_population_size = data.size() / islands;
 
 	// vector<individual> lowHalfSingle(data.begin(), data.begin() + island_population_size);
+	// rozpoczęcie algorytmu – start odliczania
+	startCounter();
 
 	for(int i =0; i<islands; i++)
 	{
@@ -71,7 +75,13 @@ int IslandMethod::find_path()
 
 	for (int h = 0; h < generations; h++)
 	{
-		cout << "Generacja " << h << endl;
+		// if(h%10==0 && getCounter()> 10000)
+		if(getCounter()> 10000)
+		{
+			return 0;
+		}
+		// cout << "Generacja " << h << endl;
+		// cout << "Najlepszy: " << bestIndividual.cost << endl;
 		// {
 		// 	cout << "populationIsland_1: " << endl;
 		// for (int j = 0; j < island_population_size; j++)
@@ -111,7 +121,8 @@ int IslandMethod::find_path()
 			vector<int> migratorsIdxes(migrators);
 			for (int j = 0; j < migrators; j++)
 			{
-				migratorsIdxes[j] = rand() % island_population_size;
+				// migratorsIdxes[j] = rand() % island_population_size; //losowy osobnik migruje
+				migratorsIdxes[j] = j; //najlepszy osobnik migruje
 			}
 			migratingUnitIdx[i] = migratorsIdxes;
 			islandsData[i] = futures[i].get();
@@ -146,13 +157,21 @@ int IslandMethod::find_path()
 		{
 			islandsData[islands - 1][migratingUnitIdx[islands - 1][j]] = migrator0[j];
 		}
-		cout << endl;
+		// cout << endl;
+		//
+		// for (int i = 0; i < islands; i++)
+		// {
+		// 	cout << "bestIndividuals["<<i<<"]: " << bestIndividuals[i].cost << endl << endl;
+		// }
+		// cout << "najlepszy: " << getBest(bestIndividuals).cost << endl << endl;
 
+		bestIndividual = bestIndividuals[0];
 		for (int i = 0; i < islands; i++)
 		{
-			cout << "bestIndividuals["<<i<<"]: " << bestIndividuals[i].cost << endl << endl;
+			if (bestIndividuals[i].cost < bestIndividual.cost) {
+				bestIndividual = bestIndividuals[i];
+			}
 		}
-		cout << "najlepszy: " << getBest(bestIndividuals).cost << endl << endl;
 	}
 	return 0;
 }
@@ -169,12 +188,23 @@ individual IslandMethod::getBest(vector<individual> individuals)
 	return best;
 }
 
+individual IslandMethod::getBestIndividual()
+{
+	return bestIndividual;
+}
 
 
 vector<individual> IslandMethod::GenerateBeginningPopulation(int populationSize)
 {
 	vector<individual> tab(populationSize);
-	for (int i = 0; i < populationSize; i++)
+		for (int i = 0; i < populationSize && i<neighborhoodMatrix.nVertices; i++)
+		{
+			vector<int> tmpTab = getRandomGreedyPath(i);
+			tab[i].genotyp = tmpTab;
+			tab[i].cost = calculatePathCost(tmpTab);
+			tmpTab.clear();
+		}
+	for (int i = neighborhoodMatrix.nVertices; i < populationSize; i++)
 	{
 		vector<int> tmpTab(neighborhoodMatrix.nVertices);
 		GenerateRandomPermutation(tmpTab);
@@ -183,6 +213,57 @@ vector<individual> IslandMethod::GenerateBeginningPopulation(int populationSize)
 		tmpTab.clear();
 	}
 	return tab;
+}
+
+vector<int> IslandMethod::getRandomGreedyPath(int v)
+{
+	vector <int> cPath(neighborhoodMatrix.nVertices, -10);
+	int ** tmpTab = new int*[neighborhoodMatrix.nVertices];
+
+	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
+	{
+		tmpTab[i] = new int[neighborhoodMatrix.nVertices];
+	}
+	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
+	{
+		for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
+		{
+			tmpTab[i][j] = neighborhoodMatrix.neighborhoodMatrix[i][j];
+		}
+	}
+
+
+	int tmp_min = 999999999;
+	int tmp_index;
+
+	cPath[0] = v;
+	// cPath[neighborhoodMatrix.nVertices] = v;
+
+	for (int X = 0; X < neighborhoodMatrix.nVertices; X++)
+		tmpTab[X][v] = MAXINT;
+
+	for (int N = 1; N < neighborhoodMatrix.nVertices; N++)
+	{
+		for (int j = 0; j < neighborhoodMatrix.nVertices; j++)
+			if (tmpTab[v][j] < tmp_min)
+			{
+				tmp_min = tmpTab[v][j];
+				tmp_index = j;
+			}
+		for (int X = 0; X < neighborhoodMatrix.nVertices; X++)
+			tmpTab[X][tmp_index] = MAXINT;
+		v = tmp_index;
+		tmp_min = MAXINT;
+
+		cPath[N] = v;
+	}
+
+
+	for (int i = 0; i < neighborhoodMatrix.nVertices; i++)
+		delete[] tmpTab[i];
+	delete[] tmpTab;
+
+	return cPath;
 }
 
 int IslandMethod::calculatePathCost(vector<int> path)

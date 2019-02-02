@@ -9,6 +9,7 @@
 #include "SimulatedAnnealing.h"
 #include "SourceConverter.h"
 #include "TabuSearch.h"
+#include "IslandMethod.h"
 
 using namespace std;
 
@@ -178,7 +179,7 @@ float Tests::doAndSavePathAndCosts_BnB(std::string filename, vector_matrix n)
 	return branch_and_bound.getCost();
 }
 
-int factorial(int n)
+int Tests::factorial(int n)
 {
 	return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
 }
@@ -190,7 +191,7 @@ float Tests::doAndSavePathAndCosts_SA(std::string filename, vector_matrix n)
 	double timeSum = 0;
 
 	clock_t begin3 = clock();
-	SimulatedAnnealing simulated_annealing(n, 20, 0.95 ,  150 * n.nVertices);
+	SimulatedAnnealing simulated_annealing(n, 10000000000, 0.999999999 ,  150 * n.nVertices);
 	clock_t end3 = clock();
 	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
 
@@ -382,6 +383,68 @@ float Tests::doAndSavePathAndCosts_TS(std::string filename, vector_matrix n)
 	return -100;
 }
 
+float Tests::doAndSavePathAndCosts_GA(std::string filename, vector_matrix n)
+{
+	// for(int i = 0; i<3; i++)
+	// {
+	double timeSum = 0;
+
+	int nFactorial = factorial(n.nVertices);
+	cout << nFactorial << endl;
+	int populationSize = n.nVertices* (n.nVertices/2);
+	int parentPopulationSize = populationSize / 2;
+	int generationsNumber = 1000;
+	int mutationsProbability = 20;
+	int swapsInMutation = 10 * n.nVertices;
+
+	cout << populationSize * generationsNumber << endl;
+	clock_t begin3 = clock();
+	//	Genetic(vector_matrix m, int populationSize=10, 100, 500, int parentPopulationSize, int generationsNumber, int mutationsProbability, int swapsInMutation)
+	Genetic genetic(n, populationSize, parentPopulationSize, generationsNumber, mutationsProbability, swapsInMutation);
+	clock_t end3 = clock();
+	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+
+	zapiszDoPliku(filename, "GeneticAlgorithm: ");
+	zapiszDoPliku(filename, "	int populationSize =n.nVertices* (n.nVertices/2); int parentPopulationSize = populationSize / 2, int generationsNumber =1000, int mutationsProbability = 20, int swapsInMutation = 10 * n.nVertices ");
+	printMPathToFile(filename, genetic.finalPath);
+	zapiszDoPliku(filename, "koszt sciezki: " + to_string(genetic.finalCost) + "\n");
+
+	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	zapiszDoPliku(filename, "ms\n");
+	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	zapiszDoPliku(filename, "us\n");
+	// }
+
+	return -100;
+}
+
+
+float Tests::doAndSavePathAndCosts_ISLGA(std::string filename, vector_matrix n)
+{
+	// for(int i = 0; i<3; i++)
+	// {
+	double timeSum = 0;
+	
+	clock_t begin3 = clock();
+		//	IslandMethod(vector_matrix m, int populationSize, int generations, int islands, int migrators);
+	IslandMethod island_method(n, n.nVertices * 50, 1000, 1, 0);
+	clock_t end3 = clock();
+	timeSum += double(end3 - begin3) / (CLOCKS_PER_SEC / (1000));
+	
+	zapiszDoPliku(filename, "Genetic: ");
+	zapiszDoPliku(filename, "IslandMethod island_method(n, n.nVertices * 50, 1000, 1, 0);");
+	printMPathToFile(filename, island_method.getBestIndividual().genotyp);
+	zapiszDoPliku(filename, "koszt sciezki: " + to_string(island_method.getBestIndividual().cost) + "\n");
+
+	zapiszDoPliku(filename, "Czas: " + to_string(timeSum));
+	zapiszDoPliku(filename, "ms\n");
+	zapiszStatystykeDoPliku(filename, (timeSum * 1000));
+	zapiszDoPliku(filename, "us\n");
+	// }
+
+	return -100;
+}
+
 
 void Tests::doAndSavePathsAndCosts(std::string filename, vector_matrix n, int i)
 {
@@ -390,7 +453,9 @@ void Tests::doAndSavePathsAndCosts(std::string filename, vector_matrix n, int i)
 	// float bnbCost = doAndSavePathAndCosts_BnB(filename, n);
 	// doAndSavePathAndCosts_DP(filename, n);
 	// float saCost = doAndSavePathAndCosts_SA(filename, n);
-	float tsCost = doAndSavePathAndCosts_TS(filename, n);
+	// float tsCost = doAndSavePathAndCosts_TS(filename, n);
+	// float gaCost = doAndSavePathAndCosts_GA(filename, n);
+	float islgaCost = doAndSavePathAndCosts_ISLGA(filename, n);
 	// cout << bnbCost << " " << saCost << endl;
 	// saveToDifferenceTable(n.nVertices, bnbCost, tsCost, i);
 }

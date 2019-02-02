@@ -252,9 +252,9 @@ void GeneticForIslandMethod::SortPopulation(vector<individual> & population)
 	// std::sort(population.begin(), population.end(), Genetic::Sort);
 
 
-	 auto comp = [](const individual& lhs, const individual& rhs) {return lhs.cost == rhs.cost && lhs.genotyp == rhs.genotyp; };
-	 auto last = std::unique(population.begin(), population.end(), comp);
-	 population.erase(last, population.end());
+	 // auto comp = [](const individual& lhs, const individual& rhs) {return lhs.cost == rhs.cost && lhs.genotyp == rhs.genotyp; };
+	 // auto last = std::unique(population.begin(), population.end(), comp);
+	 // population.erase(last, population.end());
 
 	if (print) {
 		cout << endl;

@@ -19,6 +19,7 @@ public:
 public:
 	Tests();
 	~Tests();
+	int factorial(int n);
 	void ZachowajCzas();
 	void zapiszStatystykeDoPliku(std::string nazwapliku, float timeus);
 	void zapiszDoPliku(std::string nazwapliku, std::string tresc);
@@ -34,6 +35,8 @@ public:
 	float doAndSavePathAndCosts_BnB(std::string filename, vector_matrix n);
 	float doAndSavePathAndCosts_SA(std::string filename, vector_matrix n);
 	float doAndSavePathAndCosts_TS(std::string filename, vector_matrix n);
+	float doAndSavePathAndCosts_GA(std::string filename, vector_matrix n);
+	float doAndSavePathAndCosts_ISLGA(std::string filename, vector_matrix n);
 	void testFromFiles(vector<string> fielpaths, std::string resultFilename);
 	void TestFromRandomMatrix(int matrixSizes[], int tablength, std::string filename);
 	void saveToDifferenceTable(int nVertices, float result1, float result2, int i);

@@ -31,8 +31,7 @@ Genetic::Genetic(vector_matrix m,
 	int parentPopulationSize, 
 	int generationsNumber,
 	int mutationsProbability,
-	int swapsInMutation,
-	vector<individual> populationTab)
+	int swapsInMutation)
 {
 	neighborhoodMatrix = m;
 	this->populationSize = populationSize;
@@ -40,7 +39,7 @@ Genetic::Genetic(vector_matrix m,
 	this->generationsNumber = generationsNumber;
 	this->mutationsProbability = mutationsProbability;
 	this->swapsInMutation = swapsInMutation;
-	this->populationTab = populationTab;
+	GenerateBeginningPopulation();
 
 	finalPath = vector<int>(neighborhoodMatrix.nVertices);
 	find_path();
@@ -64,7 +63,7 @@ void Genetic::find_path()
 
 void Genetic::doNewGeneration(int i)
 {
-	cout << "Generacja " << i << endl;
+	// cout << "Generacja " << i << endl;
 	ChooseParents(parentPopulationSize);
 	CrossingImplementation();
 	// print_result();                             //wypisywanie
@@ -72,7 +71,7 @@ void Genetic::doNewGeneration(int i)
 
 void Genetic::GenerateBeginningPopulation()
 {
-
+	populationTab = vector<individual>(populationSize);
 	for (int i = 0; i < populationSize; i++)
 	{
 		vector<int> tmpTab(neighborhoodMatrix.nVertices);
@@ -124,7 +123,6 @@ void Genetic::ChooseParents(int parentPopulationSize)  //zmienic na ruletke moze
 		int ra2 = rand() % populationSize;
 		swapS(tmpTab, ra, ra2);
 	}
-
 	for (int i = 0; i < parentPopulationSize; i++)
 	{
 		parentsTab[i] = tmpTab[i];
@@ -229,6 +227,7 @@ void Genetic::CrossingImplementation()  //rozmnazanie
 	}
 	for (int i = 0; i < floor(parentPopulationSize / 2); i++)  //dla kazdej pary rodzicow utworz pare dzieci
 	{
+
 		int crossPoint1 = rand() % (neighborhoodMatrix.nVertices - 1);
 		int crossPoint2 = rand() % (neighborhoodMatrix.nVertices - crossPoint1 - 1) + crossPoint1 + 1;
 
